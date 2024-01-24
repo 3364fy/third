@@ -44,7 +44,7 @@ export default {
   },
   data() {
     return {
-      path: 'G:\\Model\\Abaqus\\project',
+      path: ['G:\\Model\\Abaqus\\project'],
       inpPaths: [],
       version: '2022',
       cpunumber: '1',
@@ -53,14 +53,18 @@ export default {
     };
   },
   methods: {
+    input(e){
+      this.path = e.target.value.split(',');
+    },
     selectDir:async function(){
       const selected = await open({
         directory: true,
-        multiple: false,
+        multiple: true,
         defaultPath: await appDir(),
       });
       if (Array.isArray(selected)) {
         // user selected multiple directories
+        this.path = selected;
       } else if (selected === null) {
         // user cancelled the selection
       } else {
@@ -73,7 +77,7 @@ export default {
 
     confirm(){
       invoke('confirm', {
-        path: this.path,
+        paths: this.path,
         suffix: 'inp',
       })
         .then((res) => {
@@ -82,7 +86,6 @@ export default {
             this.inpPaths = res;
             this.progress = new Array(res.length).fill(0);
           } else {
-            this.s = 'false';
           }
         })
         .catch((error) => {

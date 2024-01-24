@@ -8,27 +8,29 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-fn confirm(path: String, suffix: String) -> Vec<String> {
+fn confirm(paths: Vec<String>, suffix: String) -> Vec<String> {
     use std::fs;
     use std::ffi::OsStr;
     use std::path::Path;
-    let mut paths = Vec::new();
+    let mut results = Vec::new();
     let suffix = OsStr::new(&suffix);
-    if let Ok(entries) = fs::read_dir(Path::new(&path)) {
-        for entry in entries {
-            if let Ok(entry) = entry {
-                let path = entry.path();
-                if path.is_dir() {
-                    paths.extend(confirm(path.to_string_lossy().into_owned(), suffix.to_str().unwrap().to_string()));
-                } else if let Some(ext) = path.extension() {
-                    if ext == suffix && path.file_name().unwrap().to_str().unwrap() != "GEOMODEL.inp" {
-                        paths.push(path.to_string_lossy().into_owned());
+    for path in paths {
+        if let Ok(entries) = fs::read_dir(Path::new(&path)) {
+            for entry in entries {
+                if let Ok(entry) = entry {
+                    let path = entry.path();
+                    if path.is_dir() {
+                        results.extend(confirm(vec![path.to_string_lossy().into_owned()], suffix.to_str().unwrap().to_string()));
+                    } else if let Some(ext) = path.extension() {
+                        if ext == suffix && path.file_name().unwrap().to_str().unwrap() != "GEOMODEL.inp" {
+                            results.push(path.to_string_lossy().into_owned());
+                        }
                     }
                 }
             }
         }
     }
-    paths
+    results
 }
 
 #[tauri::command]

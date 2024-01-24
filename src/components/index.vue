@@ -2,7 +2,7 @@
   <!-- 上侧导航栏 -->
   <div class="row " style="justify-content:space-around;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
     
-      <input type="text" placeholder='请选择目录' @change="input" v-model="path"  class="border center" style="width: 60%;">
+      <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class="border center" style="width: 60%;">
       <button class=" border center " @click="selectDir">选择目录</button>
       <button class=" center border" @click="confirm">确定</button> 
       <button class=" center border" @click="aftertreat">开始</button> 
@@ -51,15 +51,19 @@ export default {
   },
   data() {
     return {
-      path: 'G:\\Model\\Abaqus\\project',
+      path: ['G:\\Model\\Abaqus\\project'],
       macro:'G:\\desktop\\abaqusV.py',
       version:'2022',
-      odbPaths: [s],
+      odbPaths: [],
       replace: [],
     };
   },
   methods: {
+    input1(e){
+      this.path = e.target.value.split(',');
+    },
     input(e){
+      // 用以实现宏文件的字符串替换功能
       console.log(e);
       this.replace[e.target.dataset.id][e.target.dataset.index] = e.target.value;
     },
@@ -76,11 +80,12 @@ export default {
     selectDir:async function(){
       const selected = await open({
         directory: true,
-        multiple: false,
+        multiple: true,
         defaultPath: await appDir(),
       });
       if (Array.isArray(selected)) {
         // user selected multiple directories
+        this.path = selected;
       } else if (selected === null) {
         // user cancelled the selection
       } else {
@@ -110,8 +115,10 @@ export default {
     },
 
     confirm(){
+      // 返回选择目录下所有的指定后缀的文件的路径
+      console.log(this.path);
       invoke('confirm', {
-        path: this.path,
+        paths: this.path,
         suffix: 'odb',
       })
         .then((res) => {
