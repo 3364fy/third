@@ -99,7 +99,7 @@ export default {
       invoke('start_simulate', {
         
         inppaths: this.inpPaths,
-        selectedpath:this.path,
+        selectedpath:this.path[0],
         version:this.version,
         cpunumber:this.cpunumber,
       })

@@ -8,19 +8,19 @@
     <!-- 左侧导航栏 -->
     <div class="left-bar border" >
 
-      <div class="bar" style="background-color: rgb(207, 218, 218);">
+      <div class="bar" style="">
         <router-link style="color: rgb(16, 12, 12);" to="/home">模拟</router-link>
       </div>
 
-      <div class="bar" style="background-color: rgb(207, 218, 218);">
+      <div class="bar" >
         <router-link style="color: rgb(16, 12, 12);" to="/index">后处理</router-link>
       </div>
 
     </div>
 
       <!-- 右侧功能区 -->
-    <div class="router-view border" >
-      <router-view v-slot="{ Component }">
+    <div class="router-view border" style="backdrop-filter: blur(10px);">
+      <router-view  v-slot="{ Component }" >
         <keep-alive>
           <component :is="Component" />
         </keep-alive>
@@ -33,7 +33,9 @@
 </template>
 
 <style scoped>
-
+.gradient {
+  background: linear-gradient(to right, rgb(71, 153, 235), rgb(247, 252, 119), rgb(191, 248, 221));
+  }
 
 .left-bar {
   width: auto;
