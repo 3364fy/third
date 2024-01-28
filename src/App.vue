@@ -1,6 +1,23 @@
-<script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
+<script  lang="ts">
+import { appWindow } from "@tauri-apps/api/window";
+import { confirm } from '@tauri-apps/api/dialog';
+export default {
+  
+  async mounted() {
+    this.unlisten = await appWindow.onCloseRequested(async (event) => {
+      const confirmed = await confirm('可能还有模拟任务在运行，确定要退出吗?');
+      if (!confirmed) {
+        // user did not confirm closing the window; let's prevent it
+        event.preventDefault();
+      }
+    });
+  },
+
+  beforeUnmount(){
+    this.unlisten();
+  }
+  
+}
 </script>
 
 <template>

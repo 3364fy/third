@@ -314,5 +314,6 @@ fn main() {
         .invoke_handler(tauri::generate_handler![greet, confirm,start_simulate,start1,aftertreat,read_file]) // 注册 confirm 函数   
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    
 }
 
