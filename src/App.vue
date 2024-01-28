@@ -2,7 +2,11 @@
 import { appWindow } from "@tauri-apps/api/window";
 import { confirm } from '@tauri-apps/api/dialog';
 export default {
-  
+  data() {
+    return {
+      unlisten: Function(),
+    };
+  },
   async mounted() {
     this.unlisten = await appWindow.onCloseRequested(async (event) => {
       const confirmed = await confirm('可能还有模拟任务在运行，确定要退出吗?');
