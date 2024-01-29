@@ -10,7 +10,11 @@
 
     <div class="side row" style="justify-content:space-around;">
       <button class=" center border" @click="confirm">确定</button>
-      <button class=" center border" @click="start">全部开始</button> 
+      <button class=" center border" @click="start">全部开始</button>
+      <div class="row border center" style="width: 30%;border-radius: 10px;justify-content: space-evenly;user-select: none;" @click="suspend">
+        <img  :src="suspendimg" style="width: auto;height: 30px;">
+        <div  style="width: auto;">{{ status }}</div>
+      </div>
     </div>
 
   </div>
@@ -38,6 +42,9 @@ import { open } from '@tauri-apps/api/dialog';
 import { appDir } from '@tauri-apps/api/path';
 import ProgressBar from './Progressbar.vue';
 import { fs } from '@tauri-apps/api';
+import 开始图片 from '../assets/运行.png';
+import 暂停图片 from '../assets/暂停.png';
+
 export default {
   components: {
     ProgressBar,
@@ -50,6 +57,9 @@ export default {
       cpunumber: '1',
       injecttime: 1200,
       progress: [],
+      index: 99999,
+      status:'已暂停',
+      suspendimg: 暂停图片,
     };
   },
   methods: {
@@ -108,16 +118,17 @@ export default {
             console.log(res);
             
           } else {
-            this.s = 'false';
+            
           }
         })
         .catch((error) => {
           console.error(error);
         });
-      
+      this.status = '已开始';
+      this.suspendimg = 开始图片;
       let intervalId=setInterval(() => {
-            this.progressbar();
-          }, 10000);
+        this.progressbar();
+      }, 10000); 
     },
     
     progressbar(){
@@ -128,6 +139,10 @@ export default {
         .then(data => {
           console.log(data);
           let index = Number(data);
+          console.log(`data中的index:${this.index}`);
+          this.index = index;
+          console.log(`index:${index}`);
+          console.log(`data中的index:${this.index}`);
           console.log(this.inpPaths[index]);
           // let parts = this.inpPaths[index].split('\\');
           // let filename = parts[parts.length - 1]; // 获取最后一个部分，即文件名
@@ -166,10 +181,22 @@ export default {
           console.error('log.ll'+err);
         });
     },
-    
-  }
+    suspend() {
+      if (this.status === '已暂停') {
+        console.log(this.index);
+        console.log(this.inpPaths[index])
+        this.status = '已开始';
+        this.suspendimg = 开始图片;
+      } else {
+        console.log(this.index);
+        console.log(this.inpPaths[index])
+        this.status = '已暂停';
+        this.suspendimg = 暂停图片;
+      }
+    },
 
 
+  },
 };
 
 </script>
