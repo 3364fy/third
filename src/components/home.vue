@@ -9,8 +9,8 @@
     </div>
 
     <div class="side row" style="justify-content:space-around;">
-      <button class=" center border" @click="confirm">确定</button>
-      <button class=" center border" @click="start">全部开始</button>
+      <button class=" center border" @click="confirm" :disabled="confirm_disabled">确定</button>
+      <button class=" center border" @click="start" :disabled='start_disabled'>全部开始</button>
       <div class="row border center" style="width: 30%;border-radius: 10px;justify-content: space-evenly;user-select: none;" @click="suspend">
         <img  :src="suspendimg" style="width: auto;height: 30px;">
         <div  style="width: auto;">{{ status }}</div>
@@ -51,13 +51,15 @@ export default {
   },
   data() {
     return {
+      confirm_disabled: false,
+      start_disabled: true,
       path: ['G:\\Model\\Abaqus\\project'],
       inpPaths: [],
       version: '2022',
       cpunumber: '1',
       injecttime: 1200,
       progress: [],
-      index: 99999,
+      index: 9999999,
       status:'已暂停',
       suspendimg: 暂停图片,
     };
@@ -86,6 +88,7 @@ export default {
     },
 
     confirm(){
+      this.start_disabled = false;
       invoke('confirm', {
         paths: this.path,
         suffix: 'inp',
@@ -104,6 +107,8 @@ export default {
     },
 
     start(){
+      this.confirm_disabled = true;
+      this.start_disabled = true;
       console.log(this.path);
       // const invoke = window.__TAURI__.invoke
       invoke('start_simulate', {
@@ -124,8 +129,16 @@ export default {
         .catch((error) => {
           console.error(error);
         });
-      this.status = '已开始';
-      this.suspendimg = 开始图片;
+      let interval=setInterval(() => {
+        if(this.index!==9999999){
+          this.status = '已开始';
+          this.suspendimg = 开始图片;
+          clearInterval(interval);
+        }else{
+          console.log('index+++++++++++++++++:'+this.index);
+        }
+      }, 1000); 
+      
       let intervalId=setInterval(() => {
         this.progressbar();
       }, 10000); 
@@ -134,7 +147,7 @@ export default {
     progressbar(){
       console.log(this.path);
       invoke('read_file', {
-        path:this.path+ "/log.ll",
+        path:this.path[0]+ "/log.ll",
       })
         .then(data => {
           console.log(data);
@@ -184,12 +197,12 @@ export default {
     suspend() {
       if (this.status === '已暂停') {
         console.log(this.index);
-        console.log(this.inpPaths[index])
+        console.log(this.inpPaths[this.index])
         this.status = '已开始';
         this.suspendimg = 开始图片;
       } else {
         console.log(this.index);
-        console.log(this.inpPaths[index])
+        console.log(this.inpPaths[this.index])
         this.status = '已暂停';
         this.suspendimg = 暂停图片;
       }
@@ -208,6 +221,12 @@ button{
   width: auto;
   height: 100%;
   border-radius: 5px;
+}
+
+button:disabled {
+  /* 禁用状态下的颜色 */
+  background-color: #CCCCCC;
+  color: #666666;
 }
 
 .scroll{
