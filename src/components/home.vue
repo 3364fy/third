@@ -44,7 +44,7 @@ import ProgressBar from './Progressbar.vue';
 import { fs } from '@tauri-apps/api';
 import 开始图片 from '../assets/运行.png';
 import 暂停图片 from '../assets/暂停.png';
-
+import { basename, extname } from '@tauri-apps/api/path';
 export default {
   components: {
     ProgressBar,
@@ -59,7 +59,8 @@ export default {
       cpunumber: '1',
       injecttime: 1200,
       progress: [],
-      index: 9999999,
+      allowsuspend:false,
+      index: 0,
       status:'已暂停',
       suspendimg: 暂停图片,
     };
@@ -130,7 +131,7 @@ export default {
           console.error(error);
         });
       let interval=setInterval(() => {
-        if(this.index!==9999999){
+        if(this.allowsuspend){
           this.status = '已开始';
           this.suspendimg = 开始图片;
           clearInterval(interval);
@@ -154,6 +155,7 @@ export default {
           let index = Number(data);
           console.log(`data中的index:${this.index}`);
           this.index = index;
+          this.allowsuspend=true;
           console.log(`index:${index}`);
           console.log(`data中的index:${this.index}`);
           console.log(this.inpPaths[index]);
@@ -194,18 +196,48 @@ export default {
           console.error('log.ll'+err);
         });
     },
-    suspend() {
-      if (this.status === '已暂停') {
+    async suspend() {
+      if(!this.allowsuspend){
+
+        let filePath = this.inpPaths[this.index]; 
+        let fileNameWithExt = await basename(filePath); // "example.txt"
+        let ext = await extname(filePath); // ".txt"
+
+        if (typeof fileNameWithExt !== 'string') {
+          throw new Error(`Expected a string but got ${typeof fileNameWithExt}`);
+        }
+
+        let fileName = fileNameWithExt.replace(ext, ''); // "example"
+        if (fileName.endsWith('.')) {
+          fileName = fileName.slice(0, -1);
+        }
+        console.log(fileName);
+        let jobname = this.inpPaths[this.index].split('.')[0];
+        if (this.status === '已暂停') {
         console.log(this.index);
         console.log(this.inpPaths[this.index])
-        this.status = '已开始';
-        this.suspendimg = 开始图片;
+        invoke('suspend',{
+          dir_path:this.inpPaths[this.index],
+          command:`abq${this.version} resume job=${jobname} int`
+        }).then((res) => {
+          this.status = '已开始';
+          this.suspendimg = 开始图片;
+        })
+        
       } else {
         console.log(this.index);
         console.log(this.inpPaths[this.index])
-        this.status = '已暂停';
-        this.suspendimg = 暂停图片;
+        invoke('suspend',{
+          dir_path:this.inpPaths[this.index],
+          command:`abq${this.version} suspend job=${jobname} int`
+        }).then((res) => {
+          this.status = '已暂停';
+          this.suspendimg = 暂停图片;
+        })
+        
       }
+      }
+      
     },
 
 

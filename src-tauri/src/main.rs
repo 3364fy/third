@@ -116,7 +116,24 @@ fn read_file(path: String) -> Result<String, String> {
     Ok(last_line)
 }
 
+#[tauri::command]
+fn suspend(dir_path: String, command: String) -> Result<String, String> {
+    use std::process::Command;
+    use std::env;
 
+    // Change the current directory to the provided directory path
+    env::set_current_dir(&dir_path).map_err(|err| err.to_string())?;
+
+    // Execute the command
+    let output = Command::new(command)
+        .output()
+        .map_err(|err| err.to_string())?;
+
+    // Convert the output to a string
+    let output_str = String::from_utf8(output.stdout).map_err(|err| err.to_string())?;
+
+    Ok(output_str)
+}
 
 #[tauri::command]
 fn aftertreat1(macrofile: String, odbpaths: Vec<String>, replace: Vec<Vec<String>>,version: String) -> Result<String, String> {
@@ -311,7 +328,7 @@ fn aftertreat(macrofile: String, odbpaths: Vec<String>, replace: Vec<Vec<String>
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, confirm,start_simulate,start1,aftertreat,read_file]) // 注册 confirm 函数   
+        .invoke_handler(tauri::generate_handler![greet, confirm,start_simulate,start1,aftertreat,read_file,suspend]) // 注册 confirm 函数   
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
