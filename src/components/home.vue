@@ -39,7 +39,7 @@
 <script >
 import { invoke } from '@tauri-apps/api/tauri';
 import { open } from '@tauri-apps/api/dialog';
-import { appDir } from '@tauri-apps/api/path';
+import { appDir, dirname } from '@tauri-apps/api/path';
 import ProgressBar from './Progressbar.vue';
 import { fs } from '@tauri-apps/api';
 import 开始图片 from '../assets/运行.png';
@@ -151,11 +151,11 @@ export default {
         path:this.path[0]+ "/log.ll",
       })
         .then(data => {
-          console.log(data);
+          console.log(`当前运行的模拟的索引为：${data}`);
           let index = Number(data);
           console.log(`data中的index:${this.index}`);
           this.index = index;
-          this.allowsuspend=true;
+          // this.allowsuspend=true;
           console.log(`index:${index}`);
           console.log(`data中的index:${this.index}`);
           console.log(this.inpPaths[index]);
@@ -169,13 +169,14 @@ export default {
           })
             .then(data => {
               console.log(data);
+              this.allowsuspend=true;
               //  THE ANALYSIS HAS COMPLETED SUCCESSFULLY
               if(data !==' THE ANALYSIS HAS COMPLETED SUCCESSFULLY'){
                 var parts = data.split(/\s+/);
                 console.log(parts);
                 let totaltime=parts.length >= 7 ? parseFloat(parts[7]) : null; 
                 if(totaltime){
-                  console.log(totaltime);
+                  console.log(`当前已经模拟的时间为：${totaltime}秒`);
                   this.progress[index]=parseFloat((totaltime / this.injecttime * 100).toFixed(1));
                 }else{
                   console.log(0);
@@ -188,7 +189,7 @@ export default {
               
             })
             .catch(err => {
-              console.error('sta'+err);
+              console.error('sta：'+err);
               this.progress[index]=0;
             });
         })
@@ -197,7 +198,7 @@ export default {
         });
     },
     async suspend() {
-      if(!this.allowsuspend){
+      if(this.allowsuspend){
 
         let filePath = this.inpPaths[this.index]; 
         let fileNameWithExt = await basename(filePath); // "example.txt"
@@ -212,14 +213,19 @@ export default {
           fileName = fileName.slice(0, -1);
         }
         console.log(fileName);
-        let jobname = this.inpPaths[this.index].split('.')[0];
+        let jobname = fileName
+        let dirpath= await dirname(this.inpPaths[this.index]);
+        console.log(`当前模拟的路径为：${dirpath}`)
         if (this.status === '已暂停') {
         console.log(this.index);
         console.log(this.inpPaths[this.index])
-        invoke('suspend',{
-          dir_path:this.inpPaths[this.index],
-          command:`abq${this.version} resume job=${jobname} int`
+        console.log(`abaqus resume job=${jobname}`);
+        
+        invoke('suspendswitch',{
+          dirpath:dirpath,
+          command:`abaqus resume job=${jobname}`
         }).then((res) => {
+          console.log(`res:${res}`);
           this.status = '已开始';
           this.suspendimg = 开始图片;
         })
@@ -227,10 +233,12 @@ export default {
       } else {
         console.log(this.index);
         console.log(this.inpPaths[this.index])
-        invoke('suspend',{
-          dir_path:this.inpPaths[this.index],
-          command:`abq${this.version} suspend job=${jobname} int`
+        console.log(`abaqus suspend job=${jobname}`);
+        invoke('suspendswitch',{
+          dirpath:dirpath,
+          command:`abaqus suspend job=${jobname}`
         }).then((res) => {
+          console.log(`res:${res}`);
           this.status = '已暂停';
           this.suspendimg = 暂停图片;
         })

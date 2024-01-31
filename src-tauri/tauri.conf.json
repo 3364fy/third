@@ -2,12 +2,12 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:8888",
+    "devPath": "http://localhost:3000",
     "distDir": "../dist"
   },
   "package": {
-    "productName": "ll",
-    "version": "0.0.0"
+    "productName": "LL",
+    "version": "1.7.0"
   },
   "tauri": {
     "allowlist": {
@@ -20,7 +20,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "ll",
+      "identifier": "LL",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -36,7 +36,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "ll",
+        "title": "LL-1.7",
         "width": 800,
         "height": 600
       }

@@ -117,22 +117,20 @@ fn read_file(path: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn suspend(dir_path: String, command: String) -> Result<String, String> {
-    use std::process::Command;
-    use std::env;
-
-    // Change the current directory to the provided directory path
-    env::set_current_dir(&dir_path).map_err(|err| err.to_string())?;
-
-    // Execute the command
-    let output = Command::new(command)
+fn suspendswitch(dirpath: String, command: String) -> Result<String, String> {
+    use std::process::{Command, Stdio};
+    use std::os::windows::process::CommandExt;
+    use winapi::um::winbase::CREATE_NO_WINDOW;
+    Command::new("cmd")
+        .current_dir(dirpath)
+        .args(&["/C", &command])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .creation_flags(CREATE_NO_WINDOW)
         .output()
-        .map_err(|err| err.to_string())?;
+        .expect("Failed to execute command");
 
-    // Convert the output to a string
-    let output_str = String::from_utf8(output.stdout).map_err(|err| err.to_string())?;
-
-    Ok(output_str)
+    Ok("success".to_string())
 }
 
 #[tauri::command]
@@ -328,7 +326,7 @@ fn aftertreat(macrofile: String, odbpaths: Vec<String>, replace: Vec<Vec<String>
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, confirm,start_simulate,start1,aftertreat,read_file,suspend]) // 注册 confirm 函数   
+        .invoke_handler(tauri::generate_handler![greet, confirm,start_simulate,start1,aftertreat,read_file,suspendswitch]) // 注册 confirm 函数   
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
