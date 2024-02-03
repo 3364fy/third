@@ -130,6 +130,45 @@ export default {
         .catch((error) => {
           console.error(error);
         });
+      
+      setTimeout(() => {
+        invoke('read_file', {
+        path:this.path[0]+ "/log.ll",
+      }).then(data => {
+        console.log(`调用延时函数成功，当前运log.ll内容为：${data}`);
+        let index = Number(data);
+        if(index!==0){
+            for(let i=0;i<index;i++){
+              // this.progress[i]=100;
+              invoke('read_file', {
+                path:this.inpPaths[i].split('.')[0]+".sta",
+              })
+                .then(data => {
+                  if(data !==' THE ANALYSIS HAS COMPLETED SUCCESSFULLY'){
+                    var parts = data.split(/\s+/);
+                    console.log(parts);
+                    let totaltime=parts.length >= 7 ? parseFloat(parts[7]) : null; 
+                    if(totaltime){
+                      console.log(`当前已经模拟的时间为：${totaltime}秒`);
+                      this.progress[i]=parseFloat((totaltime / this.injecttime * 100).toFixed(1));
+                    }else{
+                      console.log(0);
+                      this.progress[i]=0;
+                    }
+                  }else{
+                    this.progress[i]=100;
+                  }
+                })
+                .catch(err => {
+                  console.error(err);
+                });
+            }
+          }
+      })
+      }, 10000);
+
+      
+      
       let interval=setInterval(() => {
         if(this.allowsuspend){
           this.status = '已开始';
@@ -153,6 +192,7 @@ export default {
         .then(data => {
           console.log(`当前运行的模拟的索引为：${data}`);
           let index = Number(data);
+      
           console.log(`data中的index:${this.index}`);
           this.index = index;
           // this.allowsuspend=true;
