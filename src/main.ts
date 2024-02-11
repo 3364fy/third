@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from './components/home.vue'
 import Index from './components/index.vue'
 import Progressbar from './components/Progressbar.vue'
+import Fluent from './components/fluent.vue'
 import "./styles.css";
 import App from "./App.vue";
 const app = createApp(App);
@@ -13,6 +14,7 @@ const router = createRouter({
       {path: '/',redirect: '/Home'},
       { path: '/home', name:'Home',component: Home,meta:{keepAlive:true} },
       { path: '/index', name:'Index',component: Index,meta:{keepAlive:true} },
+      { path: '/fluent', name:'Fluent',component: Fluent,meta:{keepAlive:true} },
     ],
 })
 

@@ -30,11 +30,15 @@ export default {
     <div class="left-bar border" >
 
       <div class="bar" style="">
-        <router-link style="color: rgb(16, 12, 12);" to="/home">模拟</router-link>
+        <router-link style="color: rgb(16, 12, 12);" to="/home">Abaqus模拟</router-link>
       </div>
 
       <div class="bar" >
-        <router-link style="color: rgb(16, 12, 12);" to="/index">后处理</router-link>
+        <router-link style="color: rgb(16, 12, 12);" to="/index">Abaqus后处理</router-link>
+      </div>
+
+      <div class="bar" >
+        <router-link style="color: rgb(16, 12, 12);" to="/fluent">Fluent模拟</router-link>
       </div>
 
     </div>
