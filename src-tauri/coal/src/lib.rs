@@ -1,5 +1,22 @@
-# -*- coding: mbcs -*-
-#
+pub fn add(left: usize, right: usize) -> usize {
+    left + right
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        let result = add(2, 2);
+        assert_eq!(result, 4);
+    }
+}
+
+pub mod coal {
+
+    pub fn write_inp(parameter:&Vec<Vec<f64>>) -> String {
+        let str1=r#"# -*- coding: mbcs -*-
 # Abaqus/CAE Release 2022 replay file
 # Internal Version: 2021_09_16-01.57.30 176069
 # Run by loneve on Wed Apr 24 10:58:42 2024
@@ -27,9 +44,9 @@ def circle_from_points(point1, point2, point3):
 
     radius = math.sqrt((x1 - Ux)**2 + (y1 - Uy)**2)
 
-    return (Ux, Uy), radius
-
-parameter=[]
+    return (Ux, Uy), radius"#;
+            let str2=format!("\nparameter={:?}",parameter);
+            let str3=r#"
 length=70 
 gaplength=3 
 thickness=[] 
@@ -198,7 +215,7 @@ if coallayer-3>=0 and layers>=coallayer+2:
     print(set3)
     pickedEdge = e.findAt(*[(coord,) for coord in set3])
     p.seedEdgeByBias(biasMethod=SINGLE, end1Edges=pickedEdge, 
-     minSize=0.2, maxSize=1.0, constraint=FINER)
+        minSize=0.2, maxSize=1.0, constraint=FINER)
     
 
     p = mdb.models['Model-1'].parts['Part-1']
@@ -468,27 +485,27 @@ with open('test.inp', 'w') as f:
 with open('test.inp', 'a') as f:
     text='''*PARAMETER
 **INITIAL IN-SITU STRESS
- SIGV_EFF     = 0.026E6
- SIGh_EFF     = 0.017E6
- SIGH_EFF     = 0.024E6
- DEPTH_CEN    = 1330.0
- THICK_CAP    = 105.0
- THICK_UND    = 105.0
- DEPTH_TOP    = DEPTH_CEN - THICK_CAP
- DEPTH_BOT    = DEPTH_CEN + THICK_UND
- SIGV         = DEPTH_CEN*SIGV_EFF
- SIGV_TOP     = DEPTH_TOP*SIGV_EFF
- SIGV_BOT     = DEPTH_BOT*SIGV_EFF
- SIGH         = DEPTH_CEN*SIGH_EFF
- SIGh         = DEPTH_CEN*SIGh_EFF
- SIGH_COE     = SIGH_EFF/SIGV_EFF
- SIGh_COE     = SIGh_EFF/SIGV_EFF
+    SIGV_EFF     = 0.026E6
+    SIGh_EFF     = 0.017E6
+    SIGH_EFF     = 0.024E6
+    DEPTH_CEN    = 1330.0
+    THICK_CAP    = 105.0
+    THICK_UND    = 105.0
+    DEPTH_TOP    = DEPTH_CEN - THICK_CAP
+    DEPTH_BOT    = DEPTH_CEN + THICK_UND
+    SIGV         = DEPTH_CEN*SIGV_EFF
+    SIGV_TOP     = DEPTH_TOP*SIGV_EFF
+    SIGV_BOT     = DEPTH_BOT*SIGV_EFF
+    SIGH         = DEPTH_CEN*SIGH_EFF
+    SIGh         = DEPTH_CEN*SIGh_EFF
+    SIGH_COE     = SIGH_EFF/SIGV_EFF
+    SIGh_COE     = SIGh_EFF/SIGV_EFF
 **GASIFICATION PRESSURE
- GAS_PRES   = DEPTH_CEN*0.003E6
+    GAS_PRES   = DEPTH_CEN*0.003E6
 **TEMPERATURE
- TEMP_INI   = 44.8
- TEMP_GAS   = 1200.0
- TEMP_COL   = 200.0\n'''
+    TEMP_INI   = 44.8
+    TEMP_GAS   = 1200.0
+    TEMP_COL   = 200.0\n'''
     f.write(text)
 with open('test.inp', 'a') as f:
     for i in range(0,layers):
@@ -524,39 +541,39 @@ with open('test.inp', 'a') as f:
 with open('test.inp', 'a') as f:
     text1='*BOUNDARY\n XSYM,    1,  1\n XFIXED,  1,  1\n YFIXED,  2,  2 \n'
     text2='''*INITIAL CONDITIONS, TYPE=STRESS, GEOSTATIC
- EALL, -<SIGV_TOP>, <THICK_CAP>, -<SIGV_BOT>, -<THICK_UND>, <SIGH_COE>, <SIGh_COE> 
+    EALL, -<SIGV_TOP>, <THICK_CAP>, -<SIGV_BOT>, -<THICK_UND>, <SIGH_COE>, <SIGh_COE> 
 *INITIAL CONDITIONS, TYPE=TEMPERATURE
- NALL , <TEMP_INI>
+    NALL , <TEMP_INI>
 *AMPLITUDE, NAME=TOP_PRESSURE
- 0.0, 1.0, 1.0, 1.0
+    0.0, 1.0, 1.0, 1.0
 *AMPLITUDE, NAME=PRESS_AMP1
- 0.0, <SIGV>, 86400, <GAS_PRES>
+    0.0, <SIGV>, 86400, <GAS_PRES>
 *AMPLITUDE, NAME=PRESS_AMP2
- 0.0, <SIGH>, 86400, <GAS_PRES> 
+    0.0, <SIGH>, 86400, <GAS_PRES> 
 *AMPLITUDE, NAME=TEMP_AMP1
- 0.0, <TEMP_INI>, 86400, <TEMP_INI>, 432000, <TEMP_GAS>
+    0.0, <TEMP_INI>, 86400, <TEMP_INI>, 432000, <TEMP_GAS>
 *AMPLITUDE, NAME=TEMP_AMP2
- 0.0, <TEMP_GAS>, 864000, <TEMP_COL>  
+    0.0, <TEMP_GAS>, 864000, <TEMP_COL>  
 *********************************************************************
 **STEP1 : EQUILIBRIUM CHECK
 *********************************************************************
 *STEP, NAME=EQUILIBRIUM CHECK, NLGEOM=YES,INC=2000
 *COUPLED TEMPERATURE-DISPLACEMENT, DELTMX=3E+08
- 1.0, 1.0, 1.0, 1.0
+    1.0, 1.0, 1.0, 1.0
 *BOUNDARY
- INNER, 11, 11, <TEMP_INI>
+    INNER, 11, 11, <TEMP_INI>
 *DSLOAD
- TOP_SURF,     P, <SIGV_TOP>
- TOP_BOT_SURF, P, <SIGV>
- SIDE_SURF,    P, <SIGH>
+    TOP_SURF,     P, <SIGV_TOP>
+    TOP_BOT_SURF, P, <SIGV>
+    SIDE_SURF,    P, <SIGH>
 *DLOAD
- EALL, BY, -<SIGV_EFF> 
+    EALL, BY, -<SIGV_EFF> 
 *CONTROLS, PARAMETER=TIME INCREMENTATION
- 50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
+    50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
 *OUTPUT, FIELD, VARIABLE=PRESELECT
 *ELEMENT OUTPUT, ELSET=EALL
- PE
- PEEQ
+    PE
+    PEEQ
 *OUTPUT, HISTORY, VARIABLE=PRESELECT
 *END STEP
 *********************************************************************
@@ -564,23 +581,23 @@ with open('test.inp', 'a') as f:
 *********************************************************************
 *STEP, NAME=GASIFICATION - INCREASING TEMPERATURE, NLGEOM=YES,INC=2000
 *COUPLED TEMPERATURE-DISPLACEMENT, DELTMX=3E+08
- 3600, 432000, 1, 43200
+    3600, 432000, 1, 43200
 *BOUNDARY, AMPLITUDE=TEMP_AMP1
- INNER, 11, 11, 1.0
+    INNER, 11, 11, 1.0
 *DSLOAD, AMPLITUDE=PRESS_AMP1
- TOP_BOT_SURF, P, 1.0
+    TOP_BOT_SURF, P, 1.0
 *DSLOAD, AMPLITUDE=PRESS_AMP2
- SIDE_SURF,    P, 1.0
+    SIDE_SURF,    P, 1.0
 *DSLOAD
- TOP_SURF,     P, <SIGV_TOP> 
+    TOP_SURF,     P, <SIGV_TOP> 
 *DLOAD
- EALL, BY, -<SIGV_EFF> 
+    EALL, BY, -<SIGV_EFF> 
 *CONTROLS, PARAMETER=TIME INCREMENTATION
- 50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
+    50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
 *OUTPUT, FIELD, VARIABLE=PRESELECT
 *ELEMENT OUTPUT, ELSET=EALL
- PE
- PEEQ
+    PE
+    PEEQ
 *OUTPUT, HISTORY, VARIABLE=PRESELECT
 *END STEP
 *********************************************************************
@@ -588,23 +605,23 @@ with open('test.inp', 'a') as f:
 *********************************************************************
 *STEP, NAME=GASIFICATION - MAINTAINING TEMPERATURE, NLGEOM=YES,INC=2000
 *COUPLED TEMPERATURE-DISPLACEMENT, DELTMX=3E+08
- 3600, 3888000, 1, 86400
+    3600, 3888000, 1, 86400
 *BOUNDARY
- INNER, 11, 11, <TEMP_GAS>
+    INNER, 11, 11, <TEMP_GAS>
 *DSLOAD
- TOP_SURF,     P, <SIGV_TOP> 
+    TOP_SURF,     P, <SIGV_TOP> 
 *DSLOAD
- TOP_BOT_SURF, P, <GAS_PRES>
+    TOP_BOT_SURF, P, <GAS_PRES>
 *DSLOAD
- SIDE_SURF,    P, <GAS_PRES>
+    SIDE_SURF,    P, <GAS_PRES>
 *DLOAD
- EALL, BY, -<SIGV_EFF> 
+    EALL, BY, -<SIGV_EFF> 
 *CONTROLS, PARAMETER=TIME INCREMENTATION
- 50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
+    50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
 *OUTPUT, FIELD, VARIABLE=PRESELECT
 *ELEMENT OUTPUT, ELSET=EALL
- PE
- PEEQ
+    PE
+    PEEQ
 *OUTPUT, HISTORY, VARIABLE=PRESELECT
 *END STEP
 *********************************************************************
@@ -612,24 +629,27 @@ with open('test.inp', 'a') as f:
 *********************************************************************
 *STEP, NAME=COOLING, NLGEOM=YES,INC=2000
 *COUPLED TEMPERATURE-DISPLACEMENT, DELTMX=3E+08
- 3600, 5184000, 1, 86400
+    3600, 5184000, 1, 86400
 *BOUNDARY, AMPLITUDE=TEMP_AMP2
- INNER, 11, 11, 1.0
+    INNER, 11, 11, 1.0
 *DSLOAD
- TOP_SURF,     P, <SIGV_TOP> 
+    TOP_SURF,     P, <SIGV_TOP> 
 *DSLOAD
- TOP_BOT_SURF, P, <GAS_PRES>
- SIDE_SURF,    P, <GAS_PRES>
+    TOP_BOT_SURF, P, <GAS_PRES>
+    SIDE_SURF,    P, <GAS_PRES>
 *DLOAD
- EALL, BY, -<SIGV_EFF> 
+    EALL, BY, -<SIGV_EFF> 
 *CONTROLS, PARAMETER=TIME INCREMENTATION
- 50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
+    50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
 *OUTPUT, FIELD, VARIABLE=PRESELECT
 *ELEMENT OUTPUT, ELSET=EALL
- PE
- PEEQ
+    PE
+    PEEQ
 *OUTPUT, HISTORY, VARIABLE=PRESELECT
 *END STEP
 '''
     f.write(text1+text2)
-
+"#;
+        return str1.to_owned()+&str2+str3
+    }
+}
