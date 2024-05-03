@@ -30,6 +30,10 @@ export default {
     <div class="left-bar border" >
 
       <div class="bar" style="">
+        <router-link style="color: rgb(16, 12, 12);" to="/coal">算例</router-link>
+      </div>
+
+      <div class="bar" style="">
         <router-link style="color: rgb(16, 12, 12);" to="/home">Abaqus模拟</router-link>
       </div>
 

@@ -117,6 +117,48 @@ fn read_file(path: String) -> Result<String, String> {
 }
 
 #[tauri::command]
+fn coal(path: String, parameter: Vec<Vec<f64>>) -> Result<String, String> {
+    use std::fs;
+    // use std::io::Write;
+    use std::process::{Command, Stdio};
+    use std::os::windows::process::CommandExt;
+    use winapi::um::winbase::CREATE_NO_WINDOW;
+    use std::env;
+
+    // 获取当前路径
+    let current_dir = env::current_dir().expect("Failed to get current directory");
+
+    // 打印当前路径
+    println!("Current directory: {:?}", current_dir);
+    // 复制 mesh.py 文件到 path 指定的目录
+    fs::copy("mesh.py", format!("{}/mesh.py", path)).expect("Failed to copy file");
+
+    // 读取 mesh.py 文件的内容
+    let mut content = fs::read_to_string(format!("{}/mesh.py", path)).expect("Could not read file");
+
+    // 将 parameter 转换为字符串
+    let parameter_string = format!("{:?}", parameter);
+
+    // 替换 parameter=[] 为 parameter=parameter_string
+    content = content.replace("parameter=[]", &format!("parameter={}", parameter_string));
+
+    // 将修改后的内容写回 mesh.py 文件
+    fs::write(format!("{}/mesh.py", path), content).expect("Could not write file");
+    
+    // 执行命令
+    Command::new("cmd")
+        .current_dir(path)
+        .args(&["/C", "call", "abaqus", "cae", "noGUI=mesh.py"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .expect("Failed to execute command");
+
+    Ok("success".to_string())
+}
+
+#[tauri::command]
 fn suspendswitch(dirpath: String, command: String) -> Result<String, String> {
     use std::process::{Command, Stdio};
     use std::os::windows::process::CommandExt;
@@ -298,8 +340,19 @@ fn aftertreat(macrofile: String, odbpaths: Vec<String>, replace: Vec<Vec<String>
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, confirm,start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent]) // 注册 confirm 函数   
+        .invoke_handler(tauri::generate_handler![
+            greet, 
+            confirm,
+            start_simulate,
+            start1,
+            aftertreat,
+            read_file,
+            suspendswitch,
+            startfluent,
+            coal
+            ]) // 注册 confirm 函数   
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+    println!("hello world!")
 }
 
