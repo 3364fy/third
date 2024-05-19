@@ -52,10 +52,10 @@ export default {
   data() {
     return {
       path: ['G:\\Model\\Abaqus\\project'],
-      macro:'G:\\desktop\\abaqusV.py',
+      macro:'G:\\desktop\\abaqus.py',
       version:'2022',
       odbPaths: [],
-      replace: [],
+      replace: [["D:/temp/test0/test.odb","{pwd}\\{0}"]],
     };
   },
   methods: {

@@ -117,15 +117,16 @@ fn read_file(path: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn coal(path: String, parameter: Vec<Vec<f64>>) -> Result<String, String> {
-    // use std::fs;
+fn coal(path: String, parameter: Vec<Vec<f64>>,length:f64,gaplength:f64,sigv: f64,sigh: f64,sig_h: f64,tempini: f64,tempgas: f64,tempcol:f64,depthcen:f64,gaspres:f64,gastime:f64) -> Result<String, String> {
+    use std::fs;
     use std::io::Write;
     use std::process::{Command, Stdio};
     use std::os::windows::process::CommandExt;
     use winapi::um::winbase::CREATE_NO_WINDOW;
     use std::env;
     use coal::coal::write_inp;
-
+    let path_clone = path.clone();
+    // println!("path is {}",&path);
     // 获取当前路径
     let current_dir = env::current_dir().expect("Failed to get current directory");
 
@@ -137,7 +138,7 @@ fn coal(path: String, parameter: Vec<Vec<f64>>) -> Result<String, String> {
     let file=std::fs::File::create(targetpath.clone()).expect("create file failed");
     println!("file is {:?}", file);
     let mut file=std::fs::OpenOptions::new().append(true).open(targetpath).expect("open file failed");
-    file.write((write_inp(&parameter)).as_bytes()).expect("write file failed");
+    file.write((write_inp(&parameter,&length,&gaplength,&sigv,&sigh,&sig_h,&tempini,&tempgas,&tempcol,&depthcen,&gaspres,&gastime)).as_bytes()).expect("write file failed");
     
     // 执行命令
     Command::new("cmd")
@@ -148,6 +149,50 @@ fn coal(path: String, parameter: Vec<Vec<f64>>) -> Result<String, String> {
         .creation_flags(CREATE_NO_WINDOW)
         .output()
         .expect("Failed to execute command");
+    
+    let geomodelpath = format!("{}\\{}", path_clone, "GEOMODEL.inp");
+    let contents = fs::read_to_string(geomodelpath.clone())
+    .expect("Something went wrong reading the file");
+
+    // 找到 "*Node" 的位置
+    let split_position = contents.find("*Node").unwrap_or(0);
+
+    // 删除 "*Node" 之前的内容
+    let contents_after_node = &contents[split_position..];
+
+    // 找到 "*End Part" 的位置
+    let split_position = contents_after_node.find("*End Part").unwrap_or_else(|| contents_after_node.len());
+
+    // 保留 "*End Part" 之前的内容
+    let contents_before_end = &contents_after_node[..split_position];
+
+    // 删除所有的 ", internal"
+    let contents_without_internal = contents_before_end.replace(", internal", "");
+
+    // 把所有的=_替换为=
+    let contents_without_equal_underscore = contents_without_internal.replace("=_", "=");
+
+    // 把第一个字符为_的行的第一个字符改为“ ”
+    let final_contents: String = contents_without_equal_underscore
+        .lines()
+        .map(|line| {
+            if line.starts_with('_') {
+                format!(" {}", &line[1..])
+            } else {
+                line.to_string()
+            }
+        })
+        .collect::<Vec<String>>()
+        .join("\n");
+
+
+    // 写入新的内容
+    let mut file = fs::File::create(geomodelpath)
+        .expect("Unable to create file");
+    file.write_all(final_contents.as_bytes())
+        .expect("Unable to write data");
+
+
 
     Ok("success".to_string())
 }
@@ -274,20 +319,20 @@ fn aftertreat(macrofile: String, odbpaths: Vec<String>, replace: Vec<Vec<String>
                     if path.parent().is_some() {
                         let parent = path.parent().unwrap();
                         new_string = new_string.replace("{1}", parent.file_name().unwrap().to_str().unwrap());
-                        if parent.parent().is_some() {
-                            let grand_parent = parent.parent().unwrap();
-                            new_string = new_string.replace("{2}", grand_parent.file_name().unwrap().to_str().unwrap());
-                            if grand_parent.parent().is_some() {
-                                let great_grand_parent = grand_parent.parent().unwrap();
-                                new_string = new_string.replace("{3}", great_grand_parent.file_name().unwrap().to_str().unwrap());
-                                if great_grand_parent.parent().is_some() {
-                                    let great_great_grand_parent = great_grand_parent.parent().unwrap();
-                                    if great_great_grand_parent.file_name().is_some() {
-                                        new_string = new_string.replace("{4}", great_great_grand_parent.file_name().unwrap().to_str().unwrap());
-                                    }
-                                }
-                            }
-                        }
+                        // if parent.parent().is_some() {
+                        //     let grand_parent = parent.parent().unwrap();
+                        //     new_string = new_string.replace("{2}", grand_parent.file_name().unwrap().to_str().unwrap());
+                        //     if grand_parent.parent().is_some() {
+                        //         let great_grand_parent = grand_parent.parent().unwrap();
+                        //         new_string = new_string.replace("{3}", great_grand_parent.file_name().unwrap().to_str().unwrap());
+                        //         if great_grand_parent.parent().is_some() {
+                        //             let great_great_grand_parent = great_grand_parent.parent().unwrap();
+                        //             if great_great_grand_parent.file_name().is_some() {
+                        //                 new_string = new_string.replace("{4}", great_great_grand_parent.file_name().unwrap().to_str().unwrap());
+                        //             }
+                        //         }
+                        //     }
+                        // }
                     }
                     new_string = new_string.replace("{odb}", &filename.to_str().unwrap());
                     new_string = new_string.replace("{pwd}", path.parent().unwrap().to_str().unwrap());

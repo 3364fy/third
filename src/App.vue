@@ -30,7 +30,7 @@ export default {
     <div class="left-bar border" >
 
       <div class="bar" style="">
-        <router-link style="color: rgb(16, 12, 12);" to="/coal">算例</router-link>
+        <router-link style="color: rgb(16, 12, 12);" to="/coal">生成输入文件</router-link>
       </div>
 
       <div class="bar" style="">
@@ -41,9 +41,9 @@ export default {
         <router-link style="color: rgb(16, 12, 12);" to="/index">Abaqus后处理</router-link>
       </div>
 
-      <div class="bar" >
+      <!-- <div class="bar" >
         <router-link style="color: rgb(16, 12, 12);" to="/fluent">Fluent模拟</router-link>
-      </div>
+      </div> -->
 
     </div>
 
@@ -67,7 +67,7 @@ export default {
   }
 
 .left-bar {
-  width: auto;
+  width: 10%;
   height: 100%;
   display: flex; 
   flex-direction: column; 
@@ -76,7 +76,7 @@ export default {
 
 }
 .bar {
-  width: 10vw;
+  width: 80%;
   height: 8vh;
   border-radius: 5px;
   display: flex;

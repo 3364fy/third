@@ -1,28 +1,73 @@
 <template>
 <div class="row " style="justify-content:space-around;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
 
-  <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class="border center" style="width: 60%;">
+  <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class="border center" style="width: 70%;">
   <button class=" border center " @click="selectDir">选择目录</button>
-  <button class="border center" @click="add">+</button>
+  
   <button class=" center border" @click="confirm">确定</button> 
 
 </div>
 
-<div class="scroll" style="height: 90%;">
-  <div v-for="(item, index) in replace" :key="index"  class=" row" style="height: 8%;width: 100%;box-sizing: border-box;margin: 1px 0 1px 0;">
-    <input type="text" :data-id="index" data-index="0" placeholder='煤层？' :value="replace[index][0]" @change="input"   class="border center aa"  >
-    <input type="text" :data-id="index" data-index="1" placeholder='厚度' :value="replace[index][1]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="2" placeholder='弹性模量' :value="replace[index][2]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="3" placeholder='泊松比' :value="replace[index][3]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="4" placeholder='？' :value="replace[index][4]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="5" placeholder='？' :value="replace[index][5]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="6" placeholder='？' :value="replace[index][6]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="7" placeholder='导热性' :value="replace[index][7]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="8" placeholder='密度' :value="replace[index][8]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="9" placeholder='比热容' :value="replace[index][9]" @change="input"   class="border center aa" >
-    <input type="text" :data-id="index" data-index="10" placeholder='热膨胀性' :value="replace[index][10]" @change="input"   class="border center aa" >
-    <button class="border" :data-id="index" @click="reduce">-</button>
+<div class="row" style="height: 8%;margin: 3px 0 3px 0;justify-content:space-around;">
+  <div class="border center " style="width: 10%;">气化腔宽度(m)</div>
+  <div class="border center " style="width: 10%;">上覆地应力梯度(MPa/100m)</div>
+  <div class="border center " style="width: 10%;">水平最小地应力梯度(MPa/100m)</div>
+  <div class="border center " style="width: 10%;">水平最大地应力梯度(MPa/100m)</div>
+  <div class="border center " style="width: 10%;">煤层初始温度(℃)</div>
+  <div class="border center " style="width: 10%;">气化温度(℃)</div>
+  <div class="border center " style="width: 10%;">冷却温度(℃)</div>
+  <div class="border center " style="width: 10%;">煤层中部深度(m)</div>
+  <div class="border center " style="width: 10%;">气化运行当量压力(MPa/100m)</div>
+  <div class="border center " style="width: 10%;">气化运行时间(天 )</div>
+</div>
+
+
+<div class="row " style="justify-content:space-around;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
+
+  <!-- <input type="text" placeholder='模型长度'  v-model="length"  class="border center" style="width: 10%;margin: 0%;"> -->
+  <input type="text" placeholder='缺口长度'  v-model="gaplength"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='SIGV'  v-model="SIGV"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='SIGh'  v-model="SIGh"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='SIGH'  v-model="SIGH"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='TEMP_INI'  v-model="TEMP_INI"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='TEMP_GAS'  v-model="TEMP_GAS"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='TEMP_COL'  v-model="TEMP_COL"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='DEPTH_CEN'  v-model="DEPTH_CEN"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='DEPTH_CEN'  v-model="GAS_PRES"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='DEPTH_CEN'  v-model="GAS_TIME"  class="border center" style="width: 10%;margin: 0%;">
+</div>
+
+<div class="row" style="height: 10%;margin: 3px 0 3px 0;">
+    <div class="border center ">岩性</div>
+    <div class="border center ">厚度(m)</div>
+    <div class="border center ">弹性模量(GPa)</div>
+    <div class="border center ">泊松比</div>
+    <div class="border center ">内摩擦角(°)</div>
+    <div class="border center ">粘聚力(MPa)</div>
+    <div class="border center ">导热系数(W/(m·K))</div>
+    <div class="border center ">密度(kg/m³)</div>
+    <div class="border center ">比热容(J/(kg·K))</div>
+    <div class="border center ">热膨胀系数(10⁻⁵/K)</div>
+    <button class="border center"  @click="add">+</button>
+</div>
+
+
+<div class="scroll" style="height: 64%">
+  <div v-for="(item, index) in replace" :key="index"  class=" row" style="height: 10%;width: 100%;box-sizing: border-box;margin: 1px 0 1px 0;">
+    <input type="text" :data-id="index" data-index="0"  :value="replace[index][0]" @change="input"   class="border center "  >
+    <input type="text" :data-id="index" data-index="1"  :value="replace[index][1]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="2"  :value="replace[index][2]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="3"  :value="replace[index][3]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="5"  :value="replace[index][4]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="6"  :value="replace[index][5]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="7"  :value="replace[index][6]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="10"  :value="replace[index][7]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="9"  :value="replace[index][8]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="10"  :value="replace[index][9]" @change="input"   class="border center " >
+    <button class="border" :data-id="index"  @click="reduce">-</button>
   </div>
+
+  
 
 </div>
   
@@ -43,17 +88,30 @@ export default {
       version:'2022',
       odbPaths: [],
       replace: [
-        [0,3,21.0E9,0.30,34,34,6.1E6,2.21,2660,1100,0.70E-5],
-        [0,1,26.0E9,0.27,39.5,39.5,12.6E6,2.21,2680,1100,0.70E-5],
-        [0,2,21.0E9,0.30,34,34,6.1E6,2.21,2660,1100,0.70E-5],
-        [0,1,26.0E9,0.27,39.5,39.5,12.6E6,2.21,2680,1100,0.70E-5],
-        [0,5,21.0E9,0.30,34,34,6.1E6,2.21,2660,1100,0.70E-5],
-        [1,3,3.0E9,0.25,25.0,25.0,3.0E6,0.5,1400,1670,0.90E-5],
-        [0,2,26.0E9,0.27,39.5,39.5,12.6E6,2.21,2680,1100,0.70E-5],
-        [0,3,21.0E9,0.30,34,34,6.1E6,2.21,2660,1100,0.70E-5],
-        [0,2,26.0E9,0.27,39.5,39.5,12.6E6,2.21,2680,1100,0.70E-5],
+        [0, 68, 26.0, 0.27, 39.5, 12.6 , 2.21, 2680 , 1100, 0.70],
+        [0, 21, 21.0, 0.3,  34.0, 6.1,   2.21, 2660,  1100, 0.70],
+        [0, 10, 26.0, 0.27, 39.5, 12.6 , 2.21, 2680 , 1100, 0.70],
+        [0, 2,  21.0, 0.3,  34.0, 6.1,   2.21, 2660,  1100, 0.70],
+        [1, 8,  3.0 , 0.25, 25.0, 3.0 ,  0.5,  1400 , 1670, 0.90],
+        [0, 3.0,26.0, 0.27, 39.5, 12.6 , 2.21, 2680 , 1100, 0.70],
+        [0, 10, 21.0, 0.3,  34.0, 6.1,   2.21, 2660,  1100, 0.70],
+        [0, 10, 26.0, 0.27, 39.5, 12.6 , 2.21, 2680 , 1100, 0.70],
+        [0, 16, 21.0, 0.3,  34.0, 6.1,   2.21, 2660,  1100, 0.70],
+        [0, 62, 26.0, 0.27, 39.5, 12.6 , 2.21, 2680 , 1100, 0.70],
     
       ],
+      length:120,
+      gaplength:20,
+      SIGV:2.6,
+      SIGh:1.7,
+      SIGH:2.4,
+      TEMP_INI:44.10,
+      TEMP_GAS:1200.0,
+      TEMP_COL:200.0,
+      DEPTH_CEN : 1330,
+      GAS_PRES:0.3,
+      GAS_TIME:45,
+
     };
   },
   methods: {
@@ -116,6 +174,17 @@ export default {
       const res = await invoke('coal', {
         path: this.path,
         parameter: this.replace,
+        length: Number(this.length),
+        gaplength: Number(this.gaplength)/2,
+        sigv: Number(this.SIGV),
+        sigh: Number(this.SIGh),
+        sigH: Number(this.SIGH),
+        tempini: Number(this.TEMP_INI),
+        tempgas: Number(this.TEMP_GAS),
+        tempcol: Number(this.TEMP_COL),
+        depthcen: Number(this.DEPTH_CEN),
+        gaspres: Number(this.GAS_PRES)*10000,
+        gastime: Number(this.GAS_TIME)*3600*24,
       });
       console.log(res);
     },
@@ -157,16 +226,21 @@ button{
   height: auto;
   width: 95%;
   /* border: 1px solid rgb(6, 6, 6);
-  box-shadow: 2px 2px 2px rgb(221, 148, 148); */
+  box-shadow: 2px 2px 2px rgb(221, 1410, 1410); */
   box-sizing: border-box;
 }
 
 .scroll div input{
-  width: 9%;
-  border-radius: 0;
-  margin: 0;
+  width: 8%;
+  border-radius: 5px;
+  margin: 0 3px 0 3px;
 }
 
+.row div{
+  width: 8%;
+  border-radius: 5px;
+  margin: 0 3px 0 3px;
+}
 
 
 </style>

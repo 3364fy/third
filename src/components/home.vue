@@ -2,34 +2,33 @@
 
 <template >
   <!-- 上侧导航栏 -->
-  <div class="row " style="justify-content:left ;;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
-    <div class="side row  " style="justify-content:space-around;">
-      <input type="text" placeholder='请选择目录' v-model="path" @change="input"  class=" border center" >
+  <div class="row " style="justify-content:space-around ;;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
+      <input type="text" placeholder='请选择目录' v-model="path" @change="input"  class=" border center" style="width: 50%;">
       <button class="border center"  @click="selectDir">选择目录</button>
-    </div>
 
-    <div class="side row" style="justify-content:space-around;">
+    
       <button class=" center border" @click="confirm" :disabled="confirm_disabled">确定</button>
       <button class=" center border" @click="start" :disabled='start_disabled'>全部开始</button>
-      <div class="row border center" style="width: 30%;border-radius: 10px;justify-content: space-evenly;user-select: none;" @click="suspend">
+      <div class="row border center" style="width:auto;border-radius: 10px;justify-content: space-evenly;user-select: none;" @click="suspend">
         <img  :src="suspendimg" style="width: auto;height: 30px;">
         <div  style="width: auto;">{{ status }}</div>
       </div>
-    </div>
-
   </div>
+
+
+  
 
   <div class="row " style="justify-content:space-around ;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
     <input style="width: 30%;" type="text" placeholder='版本' v-model="version"   class=" border center" >
     <input style="width: 30%;" type="text" placeholder='CPU核数' v-model="cpunumber"   class=" border center" >
-    <input style="width: 30%;" type="text" placeholder='注液时间' v-model="injecttime"   class=" border center" >
+    <!-- <input style="width: 30%;" type="text" placeholder='注液时间' v-model="injecttime"   class=" border center" > -->
   </div>
 
   <!-- 下侧功能区 -->
   <div class="scroll " style="height: calc(87% - 40px);">
     <div class="inppath " v-for="(inppath, index) in inpPaths" :key="index">
       <div class="border">{{ inppath }}</div>
-      <ProgressBar class="border" style="margin: 10px 0 5px 0;border-radius: 5px;" :progress="progress[index]" />
+      <!-- <ProgressBar class="border" style="margin: 10px 0 5px 0;border-radius: 5px;" :progress="progress[index]" /> -->
     </div>
   </div>
 
