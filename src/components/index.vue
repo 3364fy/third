@@ -55,12 +55,13 @@ export default {
       macro:'G:\\desktop\\abaqus.py',
       version:'2022',
       odbPaths: [],
-      replace: [["D:/temp/test0/test.odb","{pwd}\\{0}"]],
+      replace: [],
     };
   },
   methods: {
     input1(e){
       this.path = e.target.value.split(',');
+      this.$store.commit('changepath', this.path);
     },
     input(e){
       // 用以实现宏文件的字符串替换功能
@@ -86,10 +87,12 @@ export default {
       if (Array.isArray(selected)) {
         // user selected multiple directories
         this.path = selected;
+        this.$store.commit('changepath', selected);
       } else if (selected === null) {
         // user cancelled the selection
       } else {
         this.path = selected;
+        this.$store.commit('changepath', selected);
         // user selected a single directory
       }
       
@@ -173,7 +176,19 @@ export default {
         });
     }
 
-}
+  },
+  beforeRouteEnter(to, from, next) {
+    console.log('beforeRouteEnter');
+    next(vm => {
+    // 访问组件实例 `vm`
+      console.log(vm.$store.state.path);
+      console.log('================');
+      if (vm.$store.state.path!='E:/Office'){
+        vm.path = [vm.$store.state.path];
+      }
+      }
+    );
+  },
 };
 
 </script>

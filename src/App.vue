@@ -9,7 +9,7 @@ export default {
   },
   async mounted() {
     this.unlisten = await appWindow.onCloseRequested(async (event) => {
-      const confirmed = await confirm('可能还有模拟任务在运行，确定要退出吗?\n不许关！！！！！！！！！！！！！！！！！！！！！');
+      const confirmed = await confirm('可能还有模拟任务在运行，确定要退出吗?');
       if (!confirmed) {
         // user did not confirm closing the window; let's prevent it
         event.preventDefault();
@@ -19,7 +19,7 @@ export default {
 
   beforeUnmount(){
     this.unlisten();
-  }
+  },
   
 }
 </script>
@@ -48,7 +48,7 @@ export default {
     </div>
 
       <!-- 右侧功能区 -->
-    <div class="router-view border" style="backdrop-filter: blur(10px);">
+    <div class="router-view border"  style="backdrop-filter: blur(10px);">
       <router-view  v-slot="{ Component }" >
         <keep-alive>
           <component :is="Component" />

@@ -72,11 +72,12 @@
 </div>
   
 </template>
-<script>
+<script >
 import { invoke } from '@tauri-apps/api/tauri';
 import { open } from '@tauri-apps/api/dialog';
 import { appDir } from '@tauri-apps/api/path';
 import ProgressBar from './Progressbar.vue';
+import { getCurrentInstance } from 'vue';
 export default {
   components: {
     ProgressBar,
@@ -117,6 +118,7 @@ export default {
   methods: {
     input1(e){
       this.path = e.target.value.split(',');
+      this.$store.commit('changepath', this.path);
     },
     input(e){
       console.log(e);
@@ -140,14 +142,18 @@ export default {
       if (Array.isArray(selected)) {
         // user selected multiple directories
         this.path = selected;
+        this.$store.commit('changepath',selected);
       } else if (selected === null) {
         // user cancelled the selection
       } else {
         this.path = selected;
+        this.$store.commit('changepath', selected);
+        console.log('88888888888888888888');
+        console.log(this.$store.state.path);
         // user selected a single directory
       }
       
-      console.log(selected);
+      // console.log(selected);
     },
 
     selectfile:async function(){
@@ -189,7 +195,20 @@ export default {
       console.log(res);
     },
 
-}
+  },
+
+  beforeRouteEnter(to, from, next) {
+    console.log('beforeRouteEnter');
+    next(vm => {
+    // 访问组件实例 `vm`
+      console.log(vm.$store.state.path);
+      console.log('================');
+      if (vm.$store.state.path!='E:/Office'){
+        vm.path = vm.$store.state.path;
+      }
+      }
+    );
+  },
 };
 
 </script>
