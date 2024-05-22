@@ -3,16 +3,17 @@
 <template >
   <!-- 上侧导航栏 -->
   <div class="row " style="justify-content:space-around ;;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
-      <input type="text" placeholder='请选择目录' v-model="path" @change="input"  class=" border center" style="width: 50%;">
-      <button class="border center"  @click="selectDir">选择目录</button>
-
+      <!-- <input type="text" placeholder='请选择目录' v-model="path" @change="input"  class=" border center" style="width: 50%;">
+      <button class="border center"  @click="selectDir">选择目录</button> -->
+      <div class="row border" style="width: 70%;justify-content: space-between;border-radius: 0%;">
+        <input type="text" placeholder='请选择目录' @change="input" v-model="path"  class=" center" style="width: 95%;border-radius: 0%;">
+        <!-- <button class=" border center " @click="selectDir">选择目录</button> -->
+        <img src="../assets/文件夹.png" @click="selectDir" style="width: auto;height: 100%;">
+      </div>
     
       <button class=" center border" @click="confirm" :disabled="confirm_disabled">确定</button>
       <button class=" center border" @click="start" :disabled='start_disabled'>全部开始</button>
-      <div class="row border center" style="width:auto;border-radius: 10px;justify-content: space-evenly;user-select: none;" @click="suspend">
-        <img  :src="suspendimg" style="width: auto;height: 30px;">
-        <div  style="width: auto;">{{ status }}</div>
-      </div>
+      
   </div>
 
 
@@ -21,6 +22,10 @@
   <div class="row " style="justify-content:space-around ;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
     <input style="width: 30%;" type="text" placeholder='版本' v-model="version"   class=" border center" >
     <input style="width: 30%;" type="text" placeholder='CPU核数' v-model="cpunumber"   class=" border center" >
+    <div class="row border center" style="width:auto;border-radius: 10px;justify-content: space-evenly;user-select: none;width: 30%;" @click="suspend">
+        <img  :src="suspendimg" style="width: auto;height: 30px;">
+        <div class="center"  style="width: auto;">{{ status }}</div>
+    </div>
     <!-- <input style="width: 30%;" type="text" placeholder='注液时间' v-model="injecttime"   class=" border center" > -->
   </div>
 

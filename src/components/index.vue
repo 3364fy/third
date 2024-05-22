@@ -1,19 +1,31 @@
 <template>
   <!-- 上侧导航栏 -->
-  <div class="row " style="justify-content:space-around;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
+  <div class="row" style="justify-content:space-between;box-sizing: border-box;height: 5%;width: 100%; margin: 10px 0 10px 0;padding: 0 20px 0 20px;box-sizing: border-box;">
     
-      <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class="border center" style="width: 60%;">
-      <button class=" border center " @click="selectDir">选择目录</button>
+      <!-- <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class="border center" style="width: 60%;">
+      <button class=" border center " @click="selectDir">选择目录</button> -->
+      <div class="row border" style="width: 85%;justify-content: space-between;border-radius: 0%;">
+        <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class=" center" style="width: 95%;border-radius: 0%;">
+        <!-- <button class=" border center " @click="selectDir">选择目录</button> -->
+        <img src="../assets/文件夹.png" @click="selectDir" style="width: auto;height: 100%;">
+      </div>
+
       <button class=" center border" @click="confirm">确定</button> 
       <button class=" center border" @click="aftertreat">开始</button> 
     
   </div>
 
-  <div class=" row  " style="justify-content:space-around;height: 5%;margin: 10px 0 10px 0;">
+  <div class=" row" style="justify-content:space-between;height: 5%;width: 100%;margin: 10px 0 10px 0;padding: 0 20px 0 20px;box-sizing: border-box;">
 
-      <input type="text" placeholder='请选择宏文件' @change="input" v-model="macro"  class="border center" style="width: 60%;">
-      <button class=" border center " @click="selectfile">选择宏文件</button>
-      <input type="text" placeholder='版本'  v-model="version"  class="border center" style="width: 11%;">
+      <!-- <input type="text" placeholder='请选择宏文件' @change="input" v-model="macro"  class="border center" style="width: 60%;">
+      <button class=" border center " @click="selectfile">选择宏文件</button> -->
+      <div class="row border" style="width: 85%;justify-content: space-between;border-radius: 0%;">
+        <input type="text" placeholder='选择宏文件' @change="input" v-model="macro"  class=" center" style="width: 95%;border-radius: 0%;">
+        <!-- <button class=" border center " @click="selectDir">选择目录</button> -->
+        <img src="../assets/文件夹.png" @click="selectfile" style="width: auto;height: 100%;">
+      </div>
+
+      <input type="text" placeholder='版本'  v-model="version"  class="border center" style="width: 8%;">
       <button class="border center" @click="add">+</button>
 
   </div>
@@ -204,6 +216,7 @@ button{
   width: auto;
   height: 100%;
   border-radius: 5px;
+  padding: 0;
 }
 
 .scroll{

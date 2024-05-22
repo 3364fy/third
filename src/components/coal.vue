@@ -1,10 +1,15 @@
 <template>
 <div class="row " style="justify-content:space-around;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
 
-  <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class="border center" style="width: 70%;">
-  <button class=" border center " @click="selectDir">选择目录</button>
+  <div class="row border" style="width: 70%;justify-content: space-between;border-radius: 0%;">
+    <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class=" center" style="width: 95%;border-radius: 0%;">
+    <!-- <button class=" border center " @click="selectDir">选择目录</button> -->
+    <img src="../assets/文件夹.png" @click="selectDir" style="width: auto;height: 100%;">
+  </div>
   
-  <button class=" center border" @click="confirm">确定</button> 
+  <button class=" center border" @click="confirm">生成文件</button> 
+  <button class=" center border">效果图</button>
+  <button class=" center border">后处理</button>
 
 </div>
 
