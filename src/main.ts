@@ -4,6 +4,7 @@ import Index from './components/index.vue'
 import Coal from "./components/coal.vue";
 import Progressbar from './components/Progressbar.vue'
 import Fluent from './components/fluent.vue'
+import test from "./components/test.vue";
 import "./styles.css";
 import App from "./App.vue";
 import store from './store'
@@ -22,6 +23,7 @@ const router = createRouter({
         component: Coal,
         meta:{keepAlive:true},
       },
+      { path: '/test', name:'Test',component: test,meta:{keepAlive:true} },
     ],
 })
 

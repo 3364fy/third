@@ -1,4 +1,4 @@
-<template>
+<template >
 <div class="row " style="justify-content:space-around;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
 
   <div class="row border" style="width: 70%;justify-content: space-between;border-radius: 0%;">
@@ -8,7 +8,7 @@
   </div>
   
   <button class=" center border" @click="confirm">生成文件</button> 
-  <button class=" center border">效果图</button>
+  <button class=" center border"  @click="showImageViewer">效果图</button>
   <button class=" center border">后处理</button>
 
 </div>
@@ -72,9 +72,27 @@
     <button class="border" :data-id="index"  @click="reduce">-</button>
   </div>
 
-  
-
 </div>
+
+<!-- 弹窗 -->
+<div class="back_box"  ref="back_box">
+  <div v-if="imageViewerVisible" class="image-viewer " >
+        <img class="drag_box border1" 
+        @click="closeImageViewer" 
+        src="../assets/1.png" 
+        draggable="true"
+        @dragstart="dragstart($event)"
+        @drag="drag($event)"
+        @dragend="dragend($event)"
+        :style="`left:${elLeft}px;top:${elTop}px`"
+        >
+  </div>
+</div>
+
+
+
+
+
   
 </template>
 <script >
@@ -117,7 +135,9 @@ export default {
       DEPTH_CEN : 1330,
       GAS_PRES:0.3,
       GAS_TIME:45,
-
+      imageViewerVisible: false,
+      elLeft: 100, // 元素的左偏移量
+      elTop: 100, // 元素的右偏移量
     };
   },
   methods: {
@@ -200,6 +220,40 @@ export default {
       console.log(res);
     },
 
+    showImageViewer() {
+      this.imageViewerVisible = true; // 点击按钮时显示弹窗
+    },
+    closeImageViewer() {
+      this.imageViewerVisible = false; // 关闭弹窗
+    },
+    initBodySize() {
+      this.initWidth =this.$refs.back_box.clientWidth//获取背景盒子的宽度
+    //   this.initHeight = this.initWidth*((1080*0.88)/(1920-1080*0.02))
+    this.initHeight = this.initWidth * (1080 / 1920);
+    },
+    dragstart(e) {
+      console.log('dragStart', e)
+      this.startclintX = e.clientX
+      this.startclintY = e.clientY
+    },
+
+    drag(e) {
+      console.log('drag', e)
+      let x= e.clientX - this.startclintX
+      let y= e.clientY - this.startclintY
+      this.elLeft += x
+      this.elTop += y
+    },
+
+    dragend(e) {
+        console.log('dragEnd', e)
+        let x= e.clientX - this.startclintX
+        let y= e.clientY - this.startclintY
+        this.elLeft += x
+        this.elTop += y
+      
+    }
+
   },
 
   beforeRouteEnter(to, from, next) {
@@ -214,6 +268,9 @@ export default {
       }
     );
   },
+  mounted() {
+      this.initBodySize()
+    }
 };
 
 </script>
@@ -265,6 +322,52 @@ button{
   border-radius: 5px;
   margin: 0 3px 0 3px;
 }
+
+.image-viewer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* width: 50%;
+  height: 50%; */
+  /* background-color: rgba(0, 0, 0, 0.8); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-viewer img {
+  max-width: 100%;
+  max-height: 80vh;
+}
+
+.back_box {
+  background: rgba(0, 0, 0, 0);
+  width: 50vw;
+  height: 50vh;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -30%);
+}
+
+.drag_box {
+  max-width: 100vw;
+  max-height: 80vh;
+  position: absolute;
+  /* width: 100px;
+  height: 100px; */
+  background: skyblue;
+  user-select: none; /* 不可选中,为了拖拽时不让文字高亮 */
+  z-index: 999;
+}
+
+.border1{
+  border: 0px solid rgb(12, 1, 21);
+  box-shadow: 20px 20px 20px rgb(10, 10, 10);
+  box-sizing: border-box;
+  border-radius: 5px;
+}
+
 
 
 </style>
