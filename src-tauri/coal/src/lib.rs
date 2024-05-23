@@ -489,7 +489,22 @@ mdb.jobs['GEOMODEL'].writeInput(consistencyChecking=OFF)
 
 mdb.saveAs(pathName='GEOMODEL.cae')
 
-
+session.viewports['Viewport: 1'].viewportAnnotationOptions.setValues(triad=OFF, 
+    legend=OFF, title=OFF, state=OFF, annotations=OFF, compass=OFF)
+session.viewports['Viewport: 1'].enableMultipleColors()
+session.viewports['Viewport: 1'].setColor(initialColor='#BDBDBD')
+cmap = session.viewports['Viewport: 1'].colorMappings['Set']
+cmap.updateOverrides(overrides={'EALL':(False, ), 'NALL':(False, )})
+session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
+session.viewports['Viewport: 1'].disableMultipleColors()
+session.viewports['Viewport: 1'].enableMultipleColors()
+session.viewports['Viewport: 1'].setColor(initialColor='#BDBDBD')
+cmap = session.viewports['Viewport: 1'].colorMappings['Set']
+session.viewports['Viewport: 1'].setColor(colorMapping=cmap)
+session.viewports['Viewport: 1'].disableMultipleColors()
+session.printOptions.setValues(vpDecorations=OFF)
+session.printToFile(fileName='1', format=PNG, canvasObjects=(
+    session.viewports['Viewport: 1'], ))
 
 with open('test.inp', 'w') as f:
     text1='*Heading\n'

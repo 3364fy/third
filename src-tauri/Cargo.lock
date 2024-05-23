@@ -2638,6 +2638,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "post"
+version = "0.1.0"
+
+[[package]]
 name = "powerfmt"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3793,8 +3797,10 @@ checksum = "8eaa81235c7058867fa8c0e7314f33dcce9c215f535d1913822a2b3f5e289f3c"
 name = "third"
 version = "0.0.0"
 dependencies = [
+ "base64 0.13.1",
  "coal",
  "encoding_rs",
+ "post",
  "serde",
  "serde_json",
  "tauri",

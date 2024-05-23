@@ -9,7 +9,7 @@
   
   <button class=" center border" @click="confirm">生成文件</button> 
   <button class=" center border"  @click="showImageViewer">效果图</button>
-  <button class=" center border">后处理</button>
+  <button class=" center border" @click="post">后处理</button>
 
 </div>
 
@@ -76,15 +76,15 @@
 
 <!-- 弹窗 -->
 <div class="back_box"  ref="back_box">
-  <div v-if="imageViewerVisible" class="image-viewer " >
-        <img class="drag_box border1" 
-        @click="closeImageViewer" 
-        src="../assets/1.png" 
-        draggable="true"
-        @dragstart="dragstart($event)"
+  <div v-if="imageViewerVisible" class="drag_box border1" draggable="true" @click="closeImageViewer" @dragstart="dragstart($event)"
         @drag="drag($event)"
         @dragend="dragend($event)"
-        :style="`left:${elLeft}px;top:${elTop}px`"
+        :style="`left:${elLeft}px;top:${elTop}px`">
+        <img  
+        style="max-width: auto;height:100%;"
+        class=""
+        :src="'data:image/*;base64,'+base64code" 
+        alt="找不到图片"    
         >
   </div>
 </div>
@@ -101,6 +101,8 @@ import { open } from '@tauri-apps/api/dialog';
 import { appDir } from '@tauri-apps/api/path';
 import ProgressBar from './Progressbar.vue';
 import { getCurrentInstance } from 'vue';
+import { ask } from '@tauri-apps/api/dialog';
+import { message } from '@tauri-apps/api/dialog';
 export default {
   components: {
     ProgressBar,
@@ -108,7 +110,6 @@ export default {
   data() {
     return {
       path: 'G:\\Model\\Abaqus\\project',
-      macro:'G:\\desktop\\abaqusV.py',
       version:'2022',
       odbPaths: [],
       replace: [
@@ -136,14 +137,16 @@ export default {
       GAS_PRES:0.3,
       GAS_TIME:45,
       imageViewerVisible: false,
-      elLeft: 100, // 元素的左偏移量
-      elTop: 100, // 元素的右偏移量
+      elLeft: 0, // 元素的左偏移量
+      elTop: 0, // 元素的右偏移量
+      base64code:0
     };
   },
   methods: {
     input1(e){
       this.path = e.target.value.split(',');
       this.$store.commit('changepath', this.path);
+      this.base64code = 0;
     },
     input(e){
       console.log(e);
@@ -168,11 +171,13 @@ export default {
         // user selected multiple directories
         this.path = selected;
         this.$store.commit('changepath',selected);
+        this.base64code = 0;
       } else if (selected === null) {
         // user cancelled the selection
       } else {
         this.path = selected;
         this.$store.commit('changepath', selected);
+        this.base64code = 0;  
         console.log('88888888888888888888');
         console.log(this.$store.state.path);
         // user selected a single directory
@@ -221,7 +226,26 @@ export default {
     },
 
     showImageViewer() {
-      this.imageViewerVisible = true; // 点击按钮时显示弹窗
+      
+      // 点击按钮时显示弹窗
+      if(this.base64code!=0){
+        this.imageViewerVisible = true; 
+      }
+      else{
+        invoke('base',{
+          path:this.path+'\\1.png'
+        }).then((res)=>{
+          this.base64code = res;
+          this.imageViewerVisible = true; 
+        }).catch((err)=>{
+          console.log(err);
+          // ask('This action cannot be reverted. Are you sure?', { title: 'Tauri', type: 'warning' });
+          message('没有找到指定文件', { title: '错误', type: 'error' });
+        })
+        // console.log('fffffffffffffffff');
+        // console.log(base64code);
+      }
+
     },
     closeImageViewer() {
       this.imageViewerVisible = false; // 关闭弹窗
@@ -252,6 +276,16 @@ export default {
         this.elLeft += x
         this.elTop += y
       
+    },
+    
+    post(){
+      invoke('post', {
+        path: this.path,
+      }).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
     }
 
   },
@@ -270,7 +304,12 @@ export default {
   },
   mounted() {
       this.initBodySize()
-    }
+    },
+  computed: {
+    imageSrc() {
+      return require(`${this.path}\\1.png`);
+    },
+  },
 };
 
 </script>
@@ -323,41 +362,27 @@ button{
   margin: 0 3px 0 3px;
 }
 
-.image-viewer {
-  position: absolute;
-  top: 0;
-  left: 0;
-  /* width: 50%;
-  height: 50%; */
-  /* background-color: rgba(0, 0, 0, 0.8); */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.image-viewer img {
-  max-width: 100%;
-  max-height: 80vh;
-}
 
 .back_box {
   background: rgba(0, 0, 0, 0);
   width: 50vw;
-  height: 50vh;
+  height: 60vh;
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -30%);
+  top: 0;
+  left: 0;
+  transform: translate(-10%, -10%);
 }
 
 .drag_box {
-  max-width: 100vw;
-  max-height: 80vh;
+  /* max-width: 80vw;
+  max-height: 80vh; */
   position: absolute;
-  /* width: 100px;
-  height: 100px; */
-  background: skyblue;
-  user-select: none; /* 不可选中,为了拖拽时不让文字高亮 */
+  /* background: rgb(243, 131, 46); */
+  background: linear-gradient(to bottom, rgb(23, 23, 23,0.5), rgb(255, 255, 255,1));
+  backdrop-filter: blur(100px);
+  /* 不可选中,为了拖拽时不让文字高亮 */
+  user-select: none; 
+  
   z-index: 999;
 }
 
@@ -365,7 +390,7 @@ button{
   border: 0px solid rgb(12, 1, 21);
   box-shadow: 20px 20px 20px rgb(10, 10, 10);
   box-sizing: border-box;
-  border-radius: 5px;
+  border-radius: 10px;
 }
 
 

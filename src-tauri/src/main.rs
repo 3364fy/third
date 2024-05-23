@@ -376,10 +376,50 @@ fn aftertreat(macrofile: String, odbpaths: Vec<String>, replace: Vec<Vec<String>
 }
 
 
+#[tauri::command]
+fn base(path: String) ->  Result<String, String> {
+    use std::fs;
+    use base64;
+    match fs::read(&path) {
+        Ok(content) => {
+            let base64 = base64::encode(&content);
+            // ... 使用 base64 ...
+            Ok(base64)
+        }
+        Err(e) => Err(format!("Failed to read file: {}", e)),
+    }
+}
+
+#[tauri::command]
+fn post(path:String){
+    use std::fs;
+    use std::io::Write;
+    use std::process::{Command, Stdio};
+    use std::os::windows::process::CommandExt;
+    use winapi::um::winbase::CREATE_NO_WINDOW;
+    use std::env;
+    use post::post::write_inp;
+
+    let targetpath=format!("{}\\{}",path,"abaqus.py");
+    println!("{:?}",&targetpath);
+    let file=std::fs::File::create(targetpath.clone()).expect("create file failed");
+    println!("file is {:?}", file);
+    let mut file=std::fs::OpenOptions::new().append(true).open(targetpath).expect("open file failed");
+    file.write((write_inp(&path)).as_bytes()).expect("write file failed");
+    
+    Command::new("cmd")
+        .current_dir(path)
+        .args(&["/C", "call", "abaqus", "cae", "noGUI=abaqus.py"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .expect("Failed to execute command");
+}
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, confirm, start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent,coal]) // 注册 confirm 函数   
+        .invoke_handler(tauri::generate_handler![greet, confirm, start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent,coal,base,post]) // 注册 confirm 函数   
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     println!("hello world!")

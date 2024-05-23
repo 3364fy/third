@@ -9,7 +9,7 @@ export default {
   },
   async mounted() {
     this.unlisten = await appWindow.onCloseRequested(async (event) => {
-      const confirmed = await confirm('可能还有模拟任务在运行，确定要退出吗?');
+      const confirmed = await confirm('可能还有模拟任务在运行，确定要退出吗?', { title: '警告', type: 'info',okLabel: '确定', cancelLabel: '取消' });
       if (!confirmed) {
         // user did not confirm closing the window; let's prevent it
         event.preventDefault();
