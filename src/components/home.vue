@@ -2,7 +2,7 @@
 
 <template >
   <!-- 上侧导航栏 -->
-  <div class="row " style="justify-content:space-around ;;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
+  <div class="row " style="justify-content:space-between;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;padding: 0 10px 0 10px;">
       <!-- <input type="text" placeholder='请选择目录' v-model="path" @change="input"  class=" border center" style="width: 50%;">
       <button class="border center"  @click="selectDir">选择目录</button> -->
       <div class="row border" style="width: 70%;justify-content: space-between;border-radius: 0%;">
@@ -19,10 +19,20 @@
 
   
 
-  <div class="row " style="justify-content:space-around ;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
-    <input style="width: 30%;" type="text" placeholder='版本' v-model="version"   class=" border center" >
-    <input style="width: 30%;" type="text" placeholder='CPU核数' v-model="cpunumber"   class=" border center" >
-    <div class="row border center" style="width:auto;border-radius: 10px;justify-content: space-evenly;user-select: none;width: 30%;" @click="suspend">
+  <div class="row " style="justify-content:space-between ;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;padding: 0 10px 0 10px;">
+    <div class="row border"  style="width: 30%;">
+      <div class="center"> 版本：</div>
+      <input  type="text" placeholder='版本' v-model="version" style="border-radius: 0%;">
+    </div>
+
+    <div class="row border"  style="width: 35%;">
+      <div class="center" style="">CPU核数：</div>
+      <input style="border-radius: 0%;" type="text" placeholder='CPU核数' v-model="cpunumber">
+    </div>
+
+
+    
+    <div class="row border center" style="width:auto;border-radius: 10px;justify-content: space-evenly;user-select: none;width: 10%;" @click="suspend">
         <img  :src="suspendimg" style="width: auto;height: 30px;">
         <div class="center"  style="width: auto;">{{ status }}</div>
     </div>
@@ -314,7 +324,7 @@ export default {
 
 </script>
 
-<style>
+<style scoped>
 @import "../styles.css";
 
 button{

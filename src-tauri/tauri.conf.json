@@ -7,7 +7,7 @@
   },
   "package": {
     "productName": "LL",
-    "version": "3.7.0"
+    "version": "3.8.0"
   },
   "tauri": {
     "allowlist": {
@@ -36,7 +36,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "LL-3.7.0",
+        "title": "LL-3.8.0",
         "width": 1200,
         "height": 800
       }

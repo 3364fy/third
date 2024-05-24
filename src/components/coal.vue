@@ -7,7 +7,7 @@
     <img src="../assets/文件夹.png" @click="selectDir" style="width: auto;height: 100%;">
   </div>
   
-  <button class=" center border" @click="confirm">生成文件</button> 
+  <button class=" center border" @click="confirm1">生成文件</button> 
   <button class=" center border"  @click="showImageViewer">效果图</button>
   <button class=" center border" @click="post">后处理</button>
 
@@ -75,7 +75,7 @@
 </div>
 
 <!-- 弹窗 -->
-<div class="back_box"  ref="back_box">
+<div class="back_box"  ref="back_box" :style="`z-index: ${PictureZIndex};`">
   <div v-if="imageViewerVisible" class="drag_box border1" draggable="true" @click="closeImageViewer" @dragstart="dragstart($event)"
         @drag="drag($event)"
         @dragend="dragend($event)"
@@ -123,7 +123,18 @@ export default {
         [0, 10, 26.0, 0.27, 39.5, 12.6 , 2.21, 2680 , 1100, 0.70],
         [0, 16, 21.0, 0.3,  34.0, 6.1,   2.21, 2660,  1100, 0.70],
         [0, 62, 26.0, 0.27, 39.5, 12.6 , 2.21, 2680 , 1100, 0.70],
-    
+      ],
+      limit:[
+        ['岩性',[0,1],],
+        ['厚度',[0,100],],
+        ['弹性模量',[0,100],],
+        ['泊松比',[0,1],],
+        ['内摩擦角',[0,90],],
+        ['粘聚力',[0,100],],
+        ['导热系数',[0,100],],
+        ['密度',[0,3000],],
+        ['比热容',[0,100],],
+        ['热膨胀系数',[0,1],],
       ],
       length:120,
       gaplength:20,
@@ -139,7 +150,8 @@ export default {
       imageViewerVisible: false,
       elLeft: 0, // 元素的左偏移量
       elTop: 0, // 元素的右偏移量
-      base64code:0
+      base64code:0,
+      PictureZIndex:-1
     };
   },
   methods: {
@@ -205,31 +217,56 @@ export default {
     },
 
 
-    confirm:async function(){
-      console.log(this.replace);
-      const res = await invoke('coal', {
-        path: this.path,
-        parameter: this.replace,
-        length: Number(this.length),
-        gaplength: Number(this.gaplength)/2,
-        sigv: Number(this.SIGV),
-        sigh: Number(this.SIGh),
-        sigH: Number(this.SIGH),
-        tempini: Number(this.TEMP_INI),
-        tempgas: Number(this.TEMP_GAS),
-        tempcol: Number(this.TEMP_COL),
-        depthcen: Number(this.DEPTH_CEN),
-        gaspres: Number(this.GAS_PRES)*10000,
-        gastime: Number(this.GAS_TIME)*3600*24,
-      });
-      console.log(res);
-    },
+    confirm1(){
+      // console.log(this.replace);
+      confirm('确定生成输入文件吗?', 
+        { title: '警告', type: 'info',okLabel: '确定', cancelLabel: '取消' }
+      ).then((e)=>{
+        if (e) {
+          for(var i in this.replace){
+            for(var j in this.replace[i]){
+              // console.log(this.replace[i][j]);
+              if(j==0){
+                console.log(this.replace[i][j]);
+                if(this.replace[i][j]!=0&&this.replace[i][j]!=1){
+                  message('岩性只能为0或1', { title: '错误', type: 'error' });
+                  return;
+                }
+              }
+              else if(this.replace[i][j]<this.limit[j][1][0]||this.replace[i][j]>this.limit[j][1][1]){
+                message(`输入数据超出范围,${this.limit[j][0]}的取值范围为${this.limit[j][1]}`, { title: '错误', type: 'error' });
+                return;
+              }
+              else{
+                  invoke('coal', {
+                    path: this.path,
+                    parameter: this.replace,
+                    length: Number(this.length),
+                    gaplength: Number(this.gaplength)/2,
+                    sigv: Number(this.SIGV),
+                    sigh: Number(this.SIGh),
+                    sigH: Number(this.SIGH),
+                    tempini: Number(this.TEMP_INI),
+                    tempgas: Number(this.TEMP_GAS),
+                    tempcol: Number(this.TEMP_COL),
+                    depthcen: Number(this.DEPTH_CEN),
+                    gaspres: Number(this.GAS_PRES)*10000,
+                    gastime: Number(this.GAS_TIME)*3600*24,
+                  });
+                  console.log(res);
+              }
+            }
+          }
+        }
+      })
+   },
 
     showImageViewer() {
       
       // 点击按钮时显示弹窗
       if(this.base64code!=0){
         this.imageViewerVisible = true; 
+        this.PictureZIndex=998
       }
       else{
         invoke('base',{
@@ -237,6 +274,7 @@ export default {
         }).then((res)=>{
           this.base64code = res;
           this.imageViewerVisible = true; 
+          this.PictureZIndex=998
         }).catch((err)=>{
           console.log(err);
           // ask('This action cannot be reverted. Are you sure?', { title: 'Tauri', type: 'warning' });
@@ -249,6 +287,7 @@ export default {
     },
     closeImageViewer() {
       this.imageViewerVisible = false; // 关闭弹窗
+      this.PictureZIndex=-1
     },
     initBodySize() {
       this.initWidth =this.$refs.back_box.clientWidth//获取背景盒子的宽度

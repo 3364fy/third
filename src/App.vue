@@ -44,9 +44,9 @@ export default {
       <!-- <div class="bar" >
         <router-link style="color: rgb(16, 12, 12);" to="/fluent">Fluent模拟</router-link>
       </div> -->
-      <div class="bar" >
+      <!-- <div class="bar" >
         <router-link style="color: rgb(16, 12, 12);" to="/test">测试</router-link>
-      </div>
+      </div> -->
 
     </div>
 
