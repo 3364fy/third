@@ -27,7 +27,7 @@ export default {
 <template>
   <div id="app" style="display: flex;flex-direction: row;">
     <!-- 左侧导航栏 -->
-    <div class="left-bar border" >
+    <div class="left-bar border">
 
       <div class="bar" style="">
         <router-link style="color: rgb(16, 12, 12);" to="/coal">生成输入文件</router-link>
@@ -70,6 +70,7 @@ export default {
   }
 
 .left-bar {
+  position: relative;
   width: 10%;
   height: 100%;
   display: flex; 
@@ -91,10 +92,22 @@ export default {
   margin: 2px;
 }
 
+/* .bar::before{
+  content: "";
+  width: 200%;
+  height: 200%;
+  background-color: aliceblue;
+  position: absolute;
+  left: -50%;
+  top: -50%;
+} */
+
 .router-view{
   width: 90%;
   height: 100%;
   /* align-items: center; */
 }
+
+
 
 </style>

@@ -63,12 +63,12 @@
     <input type="text" :data-id="index" data-index="1"  :value="replace[index][1]" @change="input"   class="border center " >
     <input type="text" :data-id="index" data-index="2"  :value="replace[index][2]" @change="input"   class="border center " >
     <input type="text" :data-id="index" data-index="3"  :value="replace[index][3]" @change="input"   class="border center " >
-    <input type="text" :data-id="index" data-index="5"  :value="replace[index][4]" @change="input"   class="border center " >
-    <input type="text" :data-id="index" data-index="6"  :value="replace[index][5]" @change="input"   class="border center " >
-    <input type="text" :data-id="index" data-index="7"  :value="replace[index][6]" @change="input"   class="border center " >
-    <input type="text" :data-id="index" data-index="10"  :value="replace[index][7]" @change="input"   class="border center " >
-    <input type="text" :data-id="index" data-index="9"  :value="replace[index][8]" @change="input"   class="border center " >
-    <input type="text" :data-id="index" data-index="10"  :value="replace[index][9]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="4"  :value="replace[index][4]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="5"  :value="replace[index][5]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="6"  :value="replace[index][6]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="7"  :value="replace[index][7]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="8"  :value="replace[index][8]" @change="input"   class="border center " >
+    <input type="text" :data-id="index" data-index="9"  :value="replace[index][9]" @change="input"   class="border center " >
     <button class="border" :data-id="index"  @click="reduce">-</button>
   </div>
 
@@ -133,7 +133,7 @@ export default {
         ['粘聚力',[0,100],],
         ['导热系数',[0,100],],
         ['密度',[0,3000],],
-        ['比热容',[0,100],],
+        ['比热容',[0,2000],],
         ['热膨胀系数',[0,1],],
       ],
       length:120,
@@ -230,34 +230,39 @@ export default {
                 console.log(this.replace[i][j]);
                 if(this.replace[i][j]!=0&&this.replace[i][j]!=1){
                   message('岩性只能为0或1', { title: '错误', type: 'error' });
-                  return;
+                  throw new Error('岩性只能为0或1');
                 }
               }
               else if(this.replace[i][j]<this.limit[j][1][0]||this.replace[i][j]>this.limit[j][1][1]){
+                console.log(this.replace[i][j]);
                 message(`输入数据超出范围,${this.limit[j][0]}的取值范围为${this.limit[j][1]}`, { title: '错误', type: 'error' });
-                return;
-              }
-              else{
-                  invoke('coal', {
-                    path: this.path,
-                    parameter: this.replace,
-                    length: Number(this.length),
-                    gaplength: Number(this.gaplength)/2,
-                    sigv: Number(this.SIGV),
-                    sigh: Number(this.SIGh),
-                    sigH: Number(this.SIGH),
-                    tempini: Number(this.TEMP_INI),
-                    tempgas: Number(this.TEMP_GAS),
-                    tempcol: Number(this.TEMP_COL),
-                    depthcen: Number(this.DEPTH_CEN),
-                    gaspres: Number(this.GAS_PRES)*10000,
-                    gastime: Number(this.GAS_TIME)*3600*24,
-                  });
-                  console.log(res);
+                throw new Error(`输入数据超出范围,${this.limit[j][0]}的取值范围为${this.limit[j][1]}`);
               }
             }
           }
         }
+      }).then((res)=>{
+        console.log('pppppppppppppp');
+        console.log(res);
+        invoke('coal', {
+          path: this.path,
+          parameter: this.replace,
+          length: Number(this.length),
+          gaplength: Number(this.gaplength)/2,
+          sigv: Number(this.SIGV),
+          sigh: Number(this.SIGh),
+          sigH: Number(this.SIGH),
+          tempini: Number(this.TEMP_INI),
+          tempgas: Number(this.TEMP_GAS),
+          tempcol: Number(this.TEMP_COL),
+          depthcen: Number(this.DEPTH_CEN),
+          gaspres: Number(this.GAS_PRES)*10000,
+          gastime: Number(this.GAS_TIME)*3600*24,
+        });
+        console.log(res);
+              
+      }).catch((err)=>{
+        console.log(err);
       })
    },
 
@@ -410,6 +415,7 @@ button{
   top: 0;
   left: 0;
   transform: translate(-10%, -10%);
+  /* filter: blur(1px); */
 }
 
 .drag_box {

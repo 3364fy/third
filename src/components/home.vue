@@ -18,32 +18,33 @@
 
 
   
-
   <div class="row " style="justify-content:space-between ;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;padding: 0 10px 0 10px;">
     <div class="row border"  style="width: 30%;">
-      <div class="center"> 版本：</div>
-      <input  type="text" placeholder='版本' v-model="version" style="border-radius: 0%;">
+      <div class="center" style="width: auto;">Abaqus版本：</div>
+      <input  type="text" placeholder='版本' v-model="version" style="border-radius: 0%;width: 50%;">
     </div>
 
-    <div class="row border"  style="width: 35%;">
-      <div class="center" style="">CPU核数：</div>
-      <input style="border-radius: 0%;" type="text" placeholder='CPU核数' v-model="cpunumber">
+    <div class="row border"  style="width: 30%;">
+      <div class="center" style="width: auto;">CPU核数：</div>
+      <input style="border-radius: 0%;width: 60%;" type="text" placeholder='CPU核数' v-model="cpunumber">
     </div>
 
-
+    <div class="row border"  style="width: 30%;">
+      <div class="center" style="width: auto">时间：</div>
+      <input style="border-radius: 0%;width: 60%;" @change="timeinput" type="text" v-model="injecttime" placeholder='时间' >
+    </div>
     
     <div class="row border center" style="width:auto;border-radius: 10px;justify-content: space-evenly;user-select: none;width: 10%;" @click="suspend">
         <img  :src="suspendimg" style="width: auto;height: 30px;">
         <div class="center"  style="width: auto;">{{ status }}</div>
     </div>
-    <!-- <input style="width: 30%;" type="text" placeholder='注液时间' v-model="injecttime"   class=" border center" > -->
   </div>
 
   <!-- 下侧功能区 -->
   <div class="scroll " style="height: calc(87% - 40px);">
     <div class="inppath " v-for="(inppath, index) in inpPaths" :key="index">
       <div class="border">{{ inppath }}</div>
-      <!-- <ProgressBar class="border" style="margin: 10px 0 5px 0;border-radius: 5px;" :progress="progress[index]" /> -->
+      <ProgressBar class="border"  style="margin: 10px 0 5px 0;border-radius: 5px;" :progress="progress[index][0]" :step="progress[index][1]" />
     </div>
   </div>
 
@@ -71,7 +72,7 @@ export default {
       inpPaths: [],
       version: '2022',
       cpunumber: '1',
-      injecttime: 1200,
+      injecttime: [1,43200,3888000,5184000],
       progress: [],
       allowsuspend:false,
       index: 0,
@@ -80,6 +81,11 @@ export default {
     };
   },
   methods: {
+    timeinput(e){
+      this.injecttime = e.target.value.split(',');
+      console.log(this.injecttime);
+    },
+
     input(e){
       this.path = e.target.value.split(',');
       this.$store.commit('changepath', this.path);
@@ -115,7 +121,7 @@ export default {
           if (res) {
             console.log(res);
             this.inpPaths = res;
-            this.progress = new Array(res.length).fill(0);
+            this.progress = Array.from({length: res.length}, () => [0, 1]);
           } else {
           }
         })
@@ -148,41 +154,42 @@ export default {
           console.error(error);
         });
       
-      setTimeout(() => {
-        invoke('read_file', {
-        path:this.path[0]+ "/log.ll",
-      }).then(data => {
-        console.log(`调用延时函数成功，当前运log.ll内容为：${data}`);
-        let index = Number(data);
-        if(index!==0){
-            for(let i=0;i<index;i++){
-              // this.progress[i]=100;
-              invoke('read_file', {
-                path:this.inpPaths[i].split('.')[0]+".sta",
-              })
-                .then(data => {
-                  if(data !==' THE ANALYSIS HAS COMPLETED SUCCESSFULLY'){
-                    var parts = data.split(/\s+/);
-                    console.log(parts);
-                    let totaltime=parts.length >= 7 ? parseFloat(parts[7]) : null; 
-                    if(totaltime){
-                      console.log(`当前已经模拟的时间为：${totaltime}秒`);
-                      this.progress[i]=parseFloat((totaltime / this.injecttime * 100).toFixed(1));
-                    }else{
-                      console.log(0);
-                      this.progress[i]=0;
-                    }
-                  }else{
-                    this.progress[i]=100;
-                  }
-                })
-                .catch(err => {
-                  console.error(err);
-                });
-            }
-          }
-      })
-      }, 10000);
+      // setTimeout(() => {
+      //   invoke('read_file', {
+      //   path:this.path[0]+ "/log.ll",
+      // }).then(data => {
+      //   console.log(`调用延时函数成功，当前运log.ll内容为：${data}`);
+      //   let index = Number(data);
+      //   if(index!==0){
+      //       for(let i=0;i<index;i++){
+      //         // this.progress[i]=100;
+      //         invoke('read_file', {
+      //           path:this.inpPaths[i].split('.')[0]+".sta",
+      //         })
+      //           .then(data => {
+      //             if(data !==' THE ANALYSIS HAS COMPLETED SUCCESSFULLY'){
+      //               var parts = data.split(/\s+/);
+      //               console.log(parts);
+      //               let totaltime=parts.length >= 9 ? parseFloat(parts[8]) : null; 
+      //               let step=parseInt(parts[1],10)
+      //               if(totaltime){
+      //                 console.log(`当前第${step}步已经模拟的时间为：${totaltime}秒`)
+      //                 this.progress[i]=parseFloat((totaltime / this.injecttime[step-1] * 100).toFixed(1));
+      //               }else{
+      //                 console.log(0);
+      //                 this.progress[i]=0;
+      //               }
+      //             }else{
+      //               this.progress[i]=100;
+      //             }
+      //           })
+      //           .catch(err => {
+      //             console.error(err);
+      //           });
+      //       }
+      //     }
+      // })
+      // }, 10000);
 
       
       
@@ -231,16 +238,21 @@ export default {
               if(data !==' THE ANALYSIS HAS COMPLETED SUCCESSFULLY'){
                 var parts = data.split(/\s+/);
                 console.log(parts);
-                let totaltime=parts.length >= 7 ? parseFloat(parts[7]) : null; 
+                let totaltime=parts.length >= 9 ? parseFloat(parts[8]) : null; 
+                let step=parseInt(parts[1],10)
                 if(totaltime){
-                  console.log(`当前已经模拟的时间为：${totaltime}秒`);
-                  this.progress[index]=parseFloat((totaltime / this.injecttime * 100).toFixed(1));
+                  console.log(`当前第${step}步已经模拟的时间为：${totaltime}秒`)
+                  this.progress[index][0]=parseFloat((totaltime / this.injecttime[step-1] * 100).toFixed(1));
+                  this.progress[index][1]=step;
+                  console.log(`更改完后的进度为：${this.progress[index]}`);
                 }else{
                   console.log(0);
-                  this.progress[index]=0;
+                  this.progress[index][0]=0;
+                  this.progress[index][1]=1;
                 }
               }else{
-                this.progress[index]=100;
+                this.progress[index][0]=100;
+                this.progress[index][1]=1;
               }
               
               
