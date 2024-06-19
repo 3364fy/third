@@ -37,9 +37,9 @@ export default {
         <router-link style="color: rgb(16, 12, 12);" to="/home">Abaqus模拟</router-link>
       </div>
 
-      <div class="bar" >
+      <!-- <div class="bar" >
         <router-link style="color: rgb(16, 12, 12);" to="/index">Abaqus后处理</router-link>
-      </div>
+      </div> -->
 
       <!-- <div class="bar" >
         <router-link style="color: rgb(16, 12, 12);" to="/fluent">Fluent模拟</router-link>
@@ -90,6 +90,7 @@ export default {
   box-shadow: 5px 5px 5px black;
   box-sizing: border-box;
   margin: 2px;
+  z-index: 1000;
 }
 
 /* .bar::before{

@@ -30,15 +30,15 @@
 <div class="row " style="justify-content:space-around;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
 
   <!-- <input type="text" placeholder='模型长度'  v-model="length"  class="border center" style="width: 10%;margin: 0%;"> -->
-  <input type="text" placeholder='缺口长度'  v-model="gaplength"  class="border center" style="width: 10%;margin: 0%;">
-  <input type="text" placeholder='SIGV'  v-model="SIGV"  class="border center" style="width: 10%;margin: 0%;">
-  <input type="text" placeholder='SIGh'  v-model="SIGh"  class="border center" style="width: 10%;margin: 0%;">
-  <input type="text" placeholder='SIGH'  v-model="SIGH"  class="border center" style="width: 10%;margin: 0%;">
-  <input type="text" placeholder='TEMP_INI'  v-model="TEMP_INI"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='气化腔宽度' data-index="10"  v-model="gaplength" @change="input2" class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='SIGV' data-index="11" v-model="SIGV" @change="input2" class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='SIGh' data-index="12" v-model="SIGh" @change="input2" class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='SIGH' data-index="13" v-model="SIGH" @change="input2" class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='TEMP_INI' data-index="14"  v-model="TEMP_INI" @change="input2" class="border center" style="width: 10%;margin: 0%;">
   <input type="text" placeholder='TEMP_GAS'  v-model="TEMP_GAS"  class="border center" style="width: 10%;margin: 0%;">
   <input type="text" placeholder='TEMP_COL'  v-model="TEMP_COL"  class="border center" style="width: 10%;margin: 0%;">
   <input type="text" placeholder='DEPTH_CEN'  v-model="DEPTH_CEN"  class="border center" style="width: 10%;margin: 0%;">
-  <input type="text" placeholder='DEPTH_CEN'  v-model="GAS_PRES"  class="border center" style="width: 10%;margin: 0%;">
+  <input type="text" placeholder='DEPTH_CEN' data-index="15" @change="input2" v-model="GAS_PRES"  class="border center" style="width: 10%;margin: 0%;">
   <input type="text" placeholder='DEPTH_CEN'  v-model="GAS_TIME"  class="border center" style="width: 10%;margin: 0%;">
 </div>
 
@@ -59,6 +59,7 @@
 
 <div class="scroll" style="height: 64%">
   <div v-for="(item, index) in replace" :key="index"  class=" row" style="height: 10%;width: 100%;box-sizing: border-box;margin: 1px 0 1px 0;">
+    <!-- id表示第几行，index表示第几列 -->
     <input type="text" :data-id="index" data-index="0"  :value="replace[index][0]" @change="input"   class="border center "  >
     <input type="text" :data-id="index" data-index="1"  :value="replace[index][1]" @change="input"   class="border center " >
     <input type="text" :data-id="index" data-index="2"  :value="replace[index][2]" @change="input"   class="border center " >
@@ -76,10 +77,11 @@
 
 <!-- 弹窗 -->
 <div class="back_box"  ref="back_box" :style="`z-index: ${PictureZIndex};`">
-  <div v-if="imageViewerVisible" class="drag_box border1" draggable="true" @click="closeImageViewer" @dragstart="dragstart($event)"
+  <div v-if="imageViewerVisible" class="drag_box border1" draggable="true" @dragstart="dragstart($event)"
         @drag="drag($event)"
         @dragend="dragend($event)"
         :style="`left:${elLeft}px;top:${elTop}px`">
+        <button class="close-button center" @click="closeImageViewer">X</button>
         <img  
         style="max-width: auto;height:100%;"
         class=""
@@ -126,16 +128,23 @@ export default {
       ],
       limit:[
         ['岩性',[0,1],],
-        ['厚度',[0,100],],
-        ['弹性模量',[0,100],],
-        ['泊松比',[0,1],],
-        ['内摩擦角',[0,90],],
-        ['粘聚力',[0,100],],
-        ['导热系数',[0,100],],
-        ['密度',[0,3000],],
-        ['比热容',[0,2000],],
-        ['热膨胀系数',[0,1],],
+        ['厚度',[2,300],],
+        ['弹性模量',[1,100],],
+        ['泊松比',[0,0.5],],
+        ['内摩擦角',[0,60],],
+        ['粘聚力',[0,300],],
+        ['导热系数',[0,30],],
+        ['密度',[1000,3500],],
+        ['比热容',[100,3000],],
+        ['热膨胀系数',[0,30],],
+        ['气化腔宽度',[5,100]],
+        ['上覆地应力梯度',[1.5,3.0]],
+        ['水平最小地应力梯度',[1.0,2.5]],
+        ['水平最大地应力梯度',[1.0,2.5]],
+        ['煤层初始温度',[20,300]],
+        ['气化运行当量压力',[0,1.0]]
       ],
+
       length:120,
       gaplength:20,
       SIGV:2.6,
@@ -151,7 +160,7 @@ export default {
       elLeft: 0, // 元素的左偏移量
       elTop: 0, // 元素的右偏移量
       base64code:0,
-      PictureZIndex:-1
+      PictureZIndex:-999
     };
   },
   methods: {
@@ -160,9 +169,32 @@ export default {
       this.$store.commit('changepath', this.path);
       this.base64code = 0;
     },
+    input2(e){
+      if(e.target.value<this.limit[e.target.dataset.index][1][0]||e.target.value>this.limit[e.target.dataset.index][1][1]){
+        message(`输入数据超出范围,${this.limit[e.target.dataset.index][0]}的取值范围为${this.limit[e.target.dataset.index][1]}`, { title: '错误', type: 'error' });
+        throw new Error(`输入数据超出范围,${this.limit[e.target.dataset.index][0]}的取值范围为${this.limit[e.target.dataset.index][1]}`);
+      }
+    },
     input(e){
       console.log(e);
-      this.replace[e.target.dataset.id][e.target.dataset.index] =Number(e.target.value);
+      console.log(this.replace);
+      if (e.target.dataset.index==0&&(e.target.value!=0&&e.target.value!=1)){
+        
+        message('岩性只能为0或1', { title: '错误', type: 'error' });
+        throw new Error('岩性只能为0或1');
+      }
+      else{
+        this.replace[e.target.dataset.id][e.target.dataset.index] =Number(e.target.value);
+      }
+
+      if(e.target.dataset.index!=0&&(
+        e.target.value<this.limit[e.target.dataset.index][1][0]||e.target.value>this.limit[e.target.dataset.index][1][1]
+      )){
+        message(`输入数据超出范围,${this.limit[e.target.dataset.index][0]}的取值范围为${this.limit[e.target.dataset.index][1]}`, { title: '错误', type: 'error' });
+        throw new Error(`输入数据超出范围,${this.limit[e.target.dataset.index][0]}的取值范围为${this.limit[e.target.dataset.index][1]}`);
+      }else{
+        this.replace[e.target.dataset.id][e.target.dataset.index] =Number(e.target.value);
+      }
     },
     add(e){
       this.replace.push([0,0,0,0,0,0,0,0,0,0,0]);
@@ -292,7 +324,7 @@ export default {
     },
     closeImageViewer() {
       this.imageViewerVisible = false; // 关闭弹窗
-      this.PictureZIndex=-1
+      this.PictureZIndex=-998
     },
     initBodySize() {
       this.initWidth =this.$refs.back_box.clientWidth//获取背景盒子的宽度
@@ -409,8 +441,8 @@ button{
 
 .back_box {
   background: rgba(0, 0, 0, 0);
-  width: 50vw;
-  height: 60vh;
+  width: 98vw;
+  height: 100vh;
   position: fixed;
   top: 0;
   left: 0;
@@ -438,6 +470,15 @@ button{
   border-radius: 10px;
 }
 
-
+.close-button {
+  position: absolute;
+  height: 5px;
+  top: 0;
+  right: 0;
+  background: transparent;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
 
 </style>

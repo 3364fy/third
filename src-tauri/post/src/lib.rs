@@ -17,35 +17,14 @@ pub mod post {
     use std::str;
     pub fn write_inp(path: &str) -> String {
         let str=format!("# -*- coding: mbcs -*-
-#
-# Abaqus/Viewer Release 2018 replay file
-# Internal Version: 2017_11_08-01.21.41 127140
-# Run by pkuli on Tue May 14 03:05:49 2024
-#
-
-# from driverUtils import executeOnCaeGraphicsStartup
-# executeOnCaeGraphicsStartup()
-#: Executing \"onCaeGraphicsStartup()\" in the site directory ...
-#: Warning: Permission was denied for \"abaqus.rpy\"; \"abaqus.rpy.7\" will be used for this session's replay file.
 from abaqus import *
 from abaqusConstants import *
-session.Viewport(name='Viewport: 1', origin=(0.0, 0.0), width=359.216156005859, 
-    height=194.903717041016)
+session.Viewport(name='Viewport: 1', origin=(0.0, 0.0))
 session.viewports['Viewport: 1'].makeCurrent()
 session.viewports['Viewport: 1'].maximize()
 from viewerModules import *
-from driverUtils import executeOnCaeStartup
-executeOnCaeStartup()
-o1 = session.openOdb(name='{}\\test.odb')
+o1 = session.openOdb(name=r'{}\\test.odb')
 session.viewports['Viewport: 1'].setValues(displayedObject=o1)
-#: Model: D:/temp/test0/test.odb
-#: Number of Assemblies:         1
-#: Number of Assembly instances: 0
-#: Number of Part instances:     1
-#: Number of Meshes:             1
-#: Number of Element Sets:       18
-#: Number of Node Sets:          17
-#: Number of Steps:              4
 session.viewports['Viewport: 1'].odbDisplay.commonOptions.setValues(
     visibleEdges=FREE)
 session.viewports['Viewport: 1'].odbDisplay.basicOptions.setValues(

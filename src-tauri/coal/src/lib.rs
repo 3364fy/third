@@ -14,9 +14,6 @@ mod tests {
 }
 
 pub mod coal {
-    use std::str;
-
-
     pub fn write_inp(parameter:&Vec<Vec<f64>>,length:&f64,gaplength:&f64,sigv: &f64,sigh: &f64,sig_h: &f64,tempini: &f64,tempgas: &f64,tempcol:&f64,depthcen:&f64,gaspres:&f64,gastime:&f64) -> String {
         let str1=r#"# -*- coding: mbcs -*-
 # Abaqus/CAE Release 2022 replay file
@@ -603,6 +600,7 @@ with open('test.inp', 'a') as f:
     EALL, BY, -<SIGV_EFF> 
 *CONTROLS, PARAMETER=TIME INCREMENTATION
     50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
+*RESTART, WRITE, FREQUENCY=1,OVERLAY
 *OUTPUT, FIELD, VARIABLE=PRESELECT
 *ELEMENT OUTPUT, ELSET=EALL
     PE
@@ -627,6 +625,7 @@ with open('test.inp', 'a') as f:
     EALL, BY, -<SIGV_EFF> 
 *CONTROLS, PARAMETER=TIME INCREMENTATION
     50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
+*RESTART, WRITE, FREQUENCY=1,OVERLAY
 *OUTPUT, FIELD, VARIABLE=PRESELECT
 *ELEMENT OUTPUT, ELSET=EALL
     PE
@@ -652,6 +651,7 @@ with open('test.inp', 'a') as f:
     EALL, BY, -<SIGV_EFF> 
 *CONTROLS, PARAMETER=TIME INCREMENTATION
     50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
+*RESTART, WRITE, FREQUENCY=1,OVERLAY
 *OUTPUT, FIELD, VARIABLE=PRESELECT
 *ELEMENT OUTPUT, ELSET=EALL
     PE
@@ -675,6 +675,7 @@ with open('test.inp', 'a') as f:
     EALL, BY, -<SIGV_EFF> 
 *CONTROLS, PARAMETER=TIME INCREMENTATION
     50, 60, 70, 80, 90, 100, 110, 120, 130, 10, 150 
+*RESTART, WRITE, FREQUENCY=1,OVERLAY
 *OUTPUT, FIELD, VARIABLE=PRESELECT
 *ELEMENT OUTPUT, ELSET=EALL
     PE

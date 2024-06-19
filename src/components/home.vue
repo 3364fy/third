@@ -72,12 +72,12 @@ export default {
       inpPaths: [],
       version: '2022',
       cpunumber: '1',
-      injecttime: [1,43200,3888000,5184000],
-      progress: [],
+      injecttime: [1,432000,3888000,5184000],
       allowsuspend:false,
       index: 0,
       status:'已暂停',
       suspendimg: 暂停图片,
+      progress: [],
     };
   },
   methods: {
@@ -104,7 +104,7 @@ export default {
         // user cancelled the selection
       } else {
         this.path = selected;
-        this.$store.commit('changepath', selected);
+        this.$store.commit('changepath', [selected]);
         // user selected a single directory
       }
       
@@ -122,6 +122,7 @@ export default {
             console.log(res);
             this.inpPaths = res;
             this.progress = Array.from({length: res.length}, () => [0, 1]);
+            console.log(this.progress)
           } else {
           }
         })
@@ -238,10 +239,12 @@ export default {
               if(data !==' THE ANALYSIS HAS COMPLETED SUCCESSFULLY'){
                 var parts = data.split(/\s+/);
                 console.log(parts);
-                let totaltime=parts.length >= 9 ? parseFloat(parts[8]) : null; 
-                let step=parseInt(parts[1],10)
+                var totaltime=parts.length >= 9 ? parseFloat(parts[8]) : null; 
+                var step=parseInt(parts[1],10)
                 if(totaltime){
                   console.log(`当前第${step}步已经模拟的时间为：${totaltime}秒`)
+                  console.log(totaltime / this.injecttime[step-1] * 100);
+                  // this.$set(this.progress, index, [parseFloat((totaltime / this.injecttime[step-1] * 100).toFixed(1)), step]);
                   this.progress[index][0]=parseFloat((totaltime / this.injecttime[step-1] * 100).toFixed(1));
                   this.progress[index][1]=step;
                   console.log(`更改完后的进度为：${this.progress[index]}`);
@@ -259,7 +262,7 @@ export default {
             })
             .catch(err => {
               console.error('sta：'+err);
-              this.progress[index]=0;
+              this.progress[index][0]=0;
             });
         })
         .catch(err => {

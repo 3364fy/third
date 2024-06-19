@@ -392,15 +392,15 @@ fn base(path: String) ->  Result<String, String> {
 
 #[tauri::command]
 fn post(path:String){
-    use std::fs;
+    // use std::fs;
     use std::io::Write;
     use std::process::{Command, Stdio};
     use std::os::windows::process::CommandExt;
     use winapi::um::winbase::CREATE_NO_WINDOW;
-    use std::env;
+    // use std::env;
     use post::post::write_inp;
 
-    let targetpath=format!("{}\\{}",path,"abaqus.py");
+    let targetpath=format!("{}\\{}",path,"abaqusLL.py");
     println!("{:?}",&targetpath);
     let file=std::fs::File::create(targetpath.clone()).expect("create file failed");
     println!("file is {:?}", file);
@@ -409,7 +409,7 @@ fn post(path:String){
     
     Command::new("cmd")
         .current_dir(path)
-        .args(&["/C", "call", "abaqus", "cae", "noGUI=abaqus.py"])
+        .args(&["/C", "call", "abaqus", "cae", "noGUI=abaqusLL.py"])
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .creation_flags(CREATE_NO_WINDOW)
