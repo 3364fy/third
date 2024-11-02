@@ -2,12 +2,12 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:7856",
+    "devPath": "http://localhost:3234",
     "distDir": "../dist"
   },
   "package": {
     "productName": "LL",
-    "version": "3.10.0"
+    "version": "4.1.0"
   },
   "tauri": {
     "allowlist": {
@@ -36,7 +36,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "LL-3.10.0",
+        "title": "LL-4.1.0",
         "width": 1200,
         "height": 800
       }

@@ -417,9 +417,19 @@ fn post(path:String){
         .expect("Failed to execute command");
 }
 
+#[tauri::command]
+fn showimage(path:String){
+    use std::process::Command;
+    Command::new("cmd")
+        .current_dir(path)
+        .args(&["/C", "start", "1.png"])
+        .spawn()
+        .expect("Failed to execute command");
+}
+
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, confirm, start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent,coal,base,post]) // 注册 confirm 函数   
+        .invoke_handler(tauri::generate_handler![greet, confirm, start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent,coal,base,post,showimage]) // 注册 confirm 函数   
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     println!("hello world!")

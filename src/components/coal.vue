@@ -1,6 +1,6 @@
 <template >
+  
 <div class="row " style="justify-content:space-around;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
-
   <div class="row border" style="width: 70%;justify-content: space-between;border-radius: 0%;">
     <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class=" center" style="width: 95%;border-radius: 0%;">
     <!-- <button class=" border center " @click="selectDir">选择目录</button> -->
@@ -105,6 +105,12 @@ import ProgressBar from './Progressbar.vue';
 import { getCurrentInstance } from 'vue';
 import { ask } from '@tauri-apps/api/dialog';
 import { message } from '@tauri-apps/api/dialog';
+import { ref } from 'vue'
+import { Search } from '@element-plus/icons-vue'
+const input1 = ref('')
+const input2 = ref('')
+const input3 = ref('')
+const select = ref('')
 export default {
   components: {
     ProgressBar,
@@ -391,7 +397,10 @@ export default {
 </script>
 
 <style scoped>
-@import "../styles.css";
+
+.input-with-select .el-input-group__prepend {
+  background-color: var(--el-fill-color-blank);
+}
 side{
   width: 50%;
   height: 100%;

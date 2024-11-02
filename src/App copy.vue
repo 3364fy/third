@@ -1,9 +1,6 @@
 <script  lang="ts">
 import { appWindow } from "@tauri-apps/api/window";
 import { confirm } from '@tauri-apps/api/dialog';
-import Aside from "./components/Aside.vue";
-import { ElConfigProvider } from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
 export default {
   data() {
     return {
@@ -28,22 +25,48 @@ export default {
 </script>
 
 <template>
-  <el-config-provider :locale="zhCn">
-    <div id="app" class="common-layout">
-      <el-container>
-        <el-aside style="height: 100vh;width: 15vw;">
-          <Aside style="height: 100%" />
-        </el-aside>
-        <el-main style="height: 100vh;">
-          <router-view  v-slot="{ Component }" >
-            <keep-alive>
-              <component :is="Component" />
-            </keep-alive>
-          </router-view>
-        </el-main>
-      </el-container>
+  <div id="app" class="common-layout">
+    <el-container>
+      <el-aside width="200px">Aside</el-aside>
+      <el-main>Main</el-main>
+    </el-container>
+  </div>
+  
+  <div id="app" style="display: flex;flex-direction: row;">
+    <!-- 左侧导航栏 -->
+    <div class="left-bar border">
+
+      <div class="bar" style="">
+        <router-link style="color: rgb(16, 12, 12);" to="/coal">生成输入文件</router-link>
+      </div>
+
+      <div class="bar" style="">
+        <router-link style="color: rgb(16, 12, 12);" to="/home">Abaqus模拟</router-link>
+      </div>
+
+      <div class="bar" >
+        <router-link style="color: rgb(16, 12, 12);" to="/index">Abaqus后处理</router-link>
+      </div>
+
+      <div class="bar" >
+        <router-link style="color: rgb(16, 12, 12);" to="/fluent">Fluent模拟</router-link>
+      </div>
+      <div class="bar" >
+        <router-link style="color: rgb(16, 12, 12);" to="/FracDirect">算例2</router-link>
+      </div>
+
     </div>
-  </el-config-provider>
+
+      <!-- 右侧功能区 -->
+    <div class="router-view border"  style="backdrop-filter: blur(10px);">
+      <router-view  v-slot="{ Component }" >
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
+
+    </div>  
+  </div>
   
 
 </template>
