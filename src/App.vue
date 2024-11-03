@@ -2,8 +2,6 @@
 import { appWindow } from "@tauri-apps/api/window";
 import { confirm } from '@tauri-apps/api/dialog';
 import Aside from "./components/Aside.vue";
-import { ElConfigProvider } from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
 export default {
   data() {
     return {
@@ -28,7 +26,6 @@ export default {
 </script>
 
 <template>
-  <el-config-provider :locale="zhCn">
     <div id="app" class="common-layout">
       <el-container>
         <el-aside style="height: 100vh;width: 15vw;">
@@ -43,7 +40,6 @@ export default {
         </el-main>
       </el-container>
     </div>
-  </el-config-provider>
   
 
 </template>

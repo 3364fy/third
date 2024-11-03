@@ -82,7 +82,6 @@
 
 <script lang="ts" setup>
 import {
-  Document,
   Menu as IconMenu,
   Location,
   Setting,

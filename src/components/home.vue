@@ -2,43 +2,67 @@
 
 <template >
   <!-- 上侧导航栏 -->
-  <div class="row " style="justify-content:space-between;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;padding: 0 10px 0 10px;">
-      <!-- <input type="text" placeholder='请选择目录' v-model="path" @change="input"  class=" border center" style="width: 50%;">
-      <button class="border center"  @click="selectDir">选择目录</button> -->
-      <div class="row border" style="width: 70%;justify-content: space-between;border-radius: 0%;">
-        <input type="text" placeholder='请选择目录' @change="input" v-model="path"  class=" center" style="width: 95%;border-radius: 0%;">
-        <!-- <button class=" border center " @click="selectDir">选择目录</button> -->
-        <img src="../assets/文件夹.png" @click="selectDir" style="width: auto;height: 100%;">
-      </div>
-    
-      <button class=" center border" @click="confirm" :disabled="confirm_disabled">确定</button>
-      <button class=" center border" @click="start" :disabled='start_disabled'>全部开始</button>
-      
+  <div class="mt-4 row" style=" justify-content: space-evenly;margin: 10px 0 10px 0;">
+        <el-input
+        style="max-width: 600px;height: 5vh;"
+        placeholder="Please input"
+        class="input-with-select"
+        input-style="text-align: center;"
+        @change="input" 
+        v-model="path"
+        >
+            <template #append>
+                <!-- <el-button icon="Search" /> -->
+                <el-icon @click="selectDir" style="cursor: pointer;"><Folder  /></el-icon>
+            </template>
+        </el-input>
+
+        <el-button-group style="height: 5vh;" size="large">
+            <el-button  type="primary" icon="ArrowLeft" :disabled="confirm_disabled" @click="confirm">确定</el-button>
+            <el-button  type="primary" >
+              <el-icon  size="large"><component :is="currentIcon" /></el-icon>
+            </el-button>
+            <el-button type="primary" :disabled='start_disabled' @click="start">
+            全部开始<el-icon class="el-icon--right" ><ArrowRight/></el-icon>
+            </el-button>
+        </el-button-group>   
   </div>
 
+  <el-table :data="tabledata1" >
+        <el-table-column label="Abaqus版本"  header-align="center">
+        <template #default="scope">
+            <el-input
+              input-style="text-align: center;"
+              v-show="true"
+              v-model="scope.row.version"
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
 
-  
-  <div class="row " style="justify-content:space-between ;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;padding: 0 10px 0 10px;">
-    <div class="row border"  style="width: 30%;">
-      <div class="center" style="width: auto;">Abaqus版本：</div>
-      <input  type="text" placeholder='版本' v-model="version" style="border-radius: 0%;width: 50%;">
-    </div>
+        <el-table-column prop="SIGV" label="CPU核数"   header-align="center">
+        <template #default="scope">
+            <el-input
+              input-style="text-align: center;"
+              v-show="true"
+              v-model="scope.row.cpunumber"
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
 
-    <div class="row border"  style="width: 30%;">
-      <div class="center" style="width: auto;">CPU核数：</div>
-      <input style="border-radius: 0%;width: 60%;" type="text" placeholder='CPU核数' v-model="cpunumber">
-    </div>
-
-    <div class="row border"  style="width: 30%;">
-      <div class="center" style="width: auto">时间：</div>
-      <input style="border-radius: 0%;width: 60%;" @change="timeinput" type="text" v-model="injecttime" placeholder='时间' >
-    </div>
-    
-    <div class="row border center" style="width:auto;border-radius: 10px;justify-content: space-evenly;user-select: none;width: 10%;" @click="suspend">
-        <img  :src="suspendimg" style="width: auto;height: 30px;">
-        <div class="center"  style="width: auto;">{{ status }}</div>
-    </div>
-  </div>
+        <el-table-column prop="SIGh" label="时间"   header-align="center">
+        <template #default="scope">
+            <el-input
+              input-style="text-align: center;"
+              v-show="true"
+              v-model="scope.row.injecttime"
+             
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+    </el-table>
 
   <!-- 下侧功能区 -->
   <div class="scroll " style="height: calc(87% - 40px);">
@@ -57,27 +81,32 @@ import { open } from '@tauri-apps/api/dialog';
 import { appDir, dirname } from '@tauri-apps/api/path';
 import ProgressBar from './Progressbar.vue';
 import { fs } from '@tauri-apps/api';
-import 开始图片 from '../assets/运行.png';
-import 暂停图片 from '../assets/暂停.png';
 import { basename, extname } from '@tauri-apps/api/path';
+import {
+  VideoPlay,
+  VideoPause,
+} from '@element-plus/icons-vue'
 export default {
   components: {
     ProgressBar,
   },
   data() {
     return {
+      tabledata1: [
+        {
+          version: '2022',
+          cpunumber: '1000',
+          injecttime: [1,432000,3888000,5184000],
+        },
+      ],
       confirm_disabled: false,
       start_disabled: true,
       path: ['G:\\Model\\Abaqus\\project'],
       inpPaths: [],
-      version: '2022',
-      cpunumber: '1',
-      injecttime: [1,432000,3888000,5184000],
       allowsuspend:false,
       index: 0,
-      status:'已暂停',
-      suspendimg: 暂停图片,
       progress: [],
+      currentIcon:"VideoPlay",
     };
   },
   methods: {
@@ -140,8 +169,8 @@ export default {
         
         inppaths: this.inpPaths,
         selectedpath:this.path[0],
-        version:this.version,
-        cpunumber:this.cpunumber,
+        version:this.tabledata1[0].version,
+        cpunumber:this.tabledata1[0].cpunumber,
       })
         .then((res) => {
           if (res) {
@@ -196,8 +225,8 @@ export default {
       
       let interval=setInterval(() => {
         if(this.allowsuspend){
-          this.status = '已开始';
           this.suspendimg = 开始图片;
+          this.currentIcon="VideoPause";
           clearInterval(interval);
         }else{
           console.log('index+++++++++++++++++:'+this.index);
@@ -299,7 +328,7 @@ export default {
         }).then((res) => {
           console.log(`res:${res}`);
           this.status = '已开始';
-          this.suspendimg = 开始图片;
+          this.currentIcon="VideoPause";
         })
         
       } else {
@@ -342,18 +371,6 @@ export default {
 <style scoped>
 @import "../styles.css";
 
-button{
-  width: auto;
-  height: 100%;
-  border-radius: 5px;
-}
-
-button:disabled {
-  /* 禁用状态下的颜色 */
-  background-color: #CCCCCC;
-  color: #666666;
-}
-
 .scroll{
   display: flex;
   flex-direction: column;
@@ -364,16 +381,6 @@ button:disabled {
 }
 
 
-.inppath{
-  display: flex;
-  flex-direction: column;
-  border-radius: 3px;
-  height: auto;
-  width: 95%;
-  margin: 5px;
-  /* border: 1px solid rgb(6, 6, 6);
-  box-shadow: 2px 2px 2px rgb(221, 148, 148); */
-  box-sizing: border-box;
-}
+
 
 </style>
