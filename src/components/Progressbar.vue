@@ -49,7 +49,7 @@ transition: width 0.4s ease-in-out;
 .centered-content {
   position: absolute; /* 设置为 absolute，这样它就会脱离正常的文档流 */
   /* 将其定位到父元素的中心 */
-  top: 38%; 
+  top: 50%; 
   left: 50%;
   transform: translate(-50%, -50%); /* 使用 transform 来确保元素的中心与父元素的中心对齐 */
   /* 你可以在这里添加你需要的样式 */

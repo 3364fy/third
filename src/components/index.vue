@@ -1,55 +1,122 @@
 <template>
-  <!-- 上侧导航栏 -->
-  <div class="row" style="justify-content:space-between;box-sizing: border-box;height: 5%;width: 100%; margin: 10px 0 10px 0;padding: 0 20px 0 20px;box-sizing: border-box;">
-    
-      <!-- <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class="border center" style="width: 60%;">
-      <button class=" border center " @click="selectDir">选择目录</button> -->
-      <div class="row border" style="width: 85%;justify-content: space-between;border-radius: 0%;">
-        <input type="text" placeholder='请选择目录' @change="input1" v-model="path"  class=" center" style="width: 95%;border-radius: 0%;">
-        <!-- <button class=" border center " @click="selectDir">选择目录</button> -->
-        <img src="../assets/文件夹.png" @click="selectDir" style="width: auto;height: 100%;">
-      </div>
+<!-- 上侧导航栏 -->
+  <el-row style="margin-bottom: 10px;">
+    <el-col :span="19">
+        <el-input
+        style="max-width: 60vw;height: 5vh;"
+        placeholder="Please input"
+        class="input-with-select"
+        input-style="text-align: center;"
+        @change="input1" 
+        v-model="path"
+        >
+            <template #append>
+                <!-- <el-button icon="Search" /> -->
+                <el-icon @click="selectDir" style="cursor: pointer;"><Folder  /></el-icon>
+            </template>
+        </el-input>
+      </el-col>
 
-      <button class=" center border" @click="confirm">确定</button> 
-      <button class=" center border" @click="aftertreat">开始</button> 
-    
-  </div>
+      <el-col :span="5" >
+        <el-button-group  style="height: 5vh;" size="large">
+            <el-button  type="primary" icon="ArrowLeft" :disabled="confirm_disabled" @click="confirm">确定</el-button>
+            
+            <el-button type="primary" :disabled='start_disabled' @click="aftertreat">
+            全部开始<el-icon class="el-icon--right" ><ArrowRight/></el-icon>
+            </el-button>
+        </el-button-group>
+      </el-col>   
+  </el-row>
 
-  <div class=" row" style="justify-content:space-between;height: 5%;width: 100%;margin: 10px 0 10px 0;padding: 0 20px 0 20px;box-sizing: border-box;">
+<!-- 选择宏-->
+  <el-row style="margin-bottom: 10px;">
+    <el-col :span="19">
+      <el-input
+        style="max-width: 60vw;height: 5vh;"
+        placeholder="Please input"
+        class="input-with-select"
+        input-style="text-align: center;"
+        @change="input" 
+        v-model="macro"
+        >
+            <template #append>
+                <!-- <el-button icon="Search" /> -->
+                <el-icon @click="selectfile" style="cursor: pointer;"><Folder  /></el-icon>
+            </template>
+        </el-input>
+    </el-col>
+    <el-col :span="5">
+      <el-input
+        v-model="version"
+        style="max-width: 600px;"
+        placeholder="Please input"
+        input-style="text-align: center;"
+        size = "large"
+      >
+        <template #prepend>Abaqus版本号：</template>
+      </el-input>
+    </el-col>
+    <!-- <el-col :span="1">
+      <el-button size="large" type="primary" @click="add">+</el-button>
+    </el-col> -->
+  </el-row>
 
-      <!-- <input type="text" placeholder='请选择宏文件' @change="input" v-model="macro"  class="border center" style="width: 60%;">
-      <button class=" border center " @click="selectfile">选择宏文件</button> -->
-      <div class="row border" style="width: 85%;justify-content: space-between;border-radius: 0%;">
-        <input type="text" placeholder='选择宏文件' @change="input" v-model="macro"  class=" center" style="width: 95%;border-radius: 0%;">
-        <!-- <button class=" border center " @click="selectDir">选择目录</button> -->
-        <img src="../assets/文件夹.png" @click="selectfile" style="width: auto;height: 100%;">
-      </div>
-
-      <input type="text" placeholder='版本'  v-model="version"  class="border center" style="width: 8%;">
-      <button class="border center" @click="add">+</button>
-
-  </div>
 
   
 
-  <!-- 下侧功能区 -->
-  <div class="scroll" style="height: calc(86% - 30px);">
-  
-    <div v-for="(item, index) in replace" :key="index"  class=" row" style="height: 8%;width: 100%;box-sizing: border-box;margin: 2px 0 2px 0;">
-      <input type="text" :data-id="index" data-index="0" placeholder='字符串' :value="replace[index][0]" @change="input"   class="border center" >
-      <input type="text" :data-id="index" data-index="1" placeholder='替换字符串' :value="replace[index][1]" @change="input"   class="border center" >
-      <button class="border" :data-id="index" @click="reduce">-</button>
+<!-- 下侧功能区 -->
+    <el-table :data="tabledata"  max-height="25vh" style="margin-bottom: 10px;">
+      <el-table-column label="字符串"  header-align="center">
+        <template #default="scope">
+            <el-input
+              input-style="text-align: center;"
+              v-show="true"
+              v-model="scope.row.str"
+            />
+          </template>
+        </el-table-column>
+        <el-table-column label="替换字符串"  header-align="center">
+          <template #default="scope">
+              <el-input
+                input-style="text-align: center;"
+                v-show="true"
+                v-model="scope.row.replacestr"
+              />
+            </template>
+        </el-table-column>
+        <el-table-column fixed="right" min-width="10" align="center" header-align="center">
+            <template #header>
+                <el-button
+                    type="primary"
+                    size="large"
+                    @click="add"
+                >
+                    +
+                </el-button>
+            </template>
 
+            <template #default="scope">
+                <el-button
+                link
+                type="primary"
+                size="small"
+                @click.prevent="deleteRow(scope.$index)"
+                >
+                删除
+                </el-button>
+            </template>
+        </el-table-column>
+    </el-table>
 
-    </div>
+    <el-scrollbar  style="padding: 10px;height: 50vh;flex-grow: 1;boxShadow:--el-box-shadow-dark;">
+      <el-card v-for="odbpath in odbPaths" class="box-card" style="height:30px;margin: 2px 0 0 0;display: flex; text-align: center;align-items: center;">
+        
+          <div >{{ odbpath }}</div> 
+       
+      </el-card>
+    </el-scrollbar>
+    <div class="center" style="height: 3%;" v-if="odbPaths.length > 0">{{ odbPaths.length }}</div>
 
-    <div class="inppath " v-for="odbpath in odbPaths" :key="path">
-      <div class="border">{{ odbpath }}</div>
-    </div>
-    
-  </div>
-
-  <div class="center" style="height: 3%;" v-if="odbPaths.length > 0">{{ odbPaths.length }}</div>
 </template>
 
 <script>
@@ -68,6 +135,16 @@ export default {
       version:'2022',
       odbPaths: [],
       replace: [],
+      tabledata: [
+        {
+          str:"",
+          replacestr:"{pwd}\\{0}",
+        },
+        {
+          str:"",
+          replacestr:"{odb}",
+        },
+      ],
     };
   },
   methods: {
@@ -81,14 +158,17 @@ export default {
       this.replace[e.target.dataset.id][e.target.dataset.index] = e.target.value;
     },
     add(e){
-      this.replace.push(['', '']);
+      this.tabledata.push(
+        {
+          str:"",
+          replacestr:"",
+        }
+      );
       console.log(this.version);
       console.log(this.replace);
     },
-    reduce(e){
-      console.log(e.target.dataset.id);
-      this.replace.splice(e.target.dataset.id, 1);
-      console.log(this.replace);
+    deleteRow(index) {
+            this.tabledata.splice(index, 1);
     },
     selectDir:async function(){
       const selected = await open({
@@ -149,25 +229,9 @@ export default {
         });
     },
 
-    start(){
-      // const invoke = window.__TAURI__.invoke
-      invoke('start_aftertreat', {
-        inppaths: this.inpPaths,
-      })
-        .then((res) => {
-          if (res) {
-            console.log(res);
-            
-          } else {
-            this.s = 'false';
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-
     aftertreat(){
+      this.replace = this.tabledata.map(item => Object.values(item));
+      console.log(this.replace);
       // const invoke = window.__TAURI__.invoke
       invoke('aftertreat', {
         macrofile: this.macro,
@@ -207,39 +271,6 @@ export default {
 
 <style>
 @import "../styles.css";
-side{
-  width: 50%;
-  height: 100%;
-}
 
-button{
-  width: auto;
-  height: 100%;
-  border-radius: 5px;
-  padding: 0;
-}
-
-.scroll{
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  overflow: auto;
-  margin: 0;
-  box-sizing: border-box;
-  align-items: center;
-  overflow-x: hidden;
-}
-
-
-.inppath{
-  display: flex;
-  flex-direction: column;
-  border-radius: 3px;
-  height: auto;
-  width: 95%;
-  /* border: 1px solid rgb(6, 6, 6);
-  box-shadow: 2px 2px 2px rgb(221, 148, 148); */
-  box-sizing: border-box;
-}
 
 </style>

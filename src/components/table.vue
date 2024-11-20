@@ -1,7 +1,7 @@
 <template>
     <div class="mt-4 row" style=" justify-content: space-evenly;margin: 10px 0 10px 0;">
         <el-input
-        style="max-width: 600px;height: 5vh;"
+        style="max-width: 55vw;height: 5vh;"
         placeholder="Please input"
         class="input-with-select"
         input-style="text-align: center;"
@@ -293,7 +293,7 @@
             <template #header>
                 <el-button
                     type="primary"
-                    size="large"
+        
                     @click="onAddItem"
                 >
                     +
@@ -464,7 +464,6 @@ export default {
     },
     methods: {
       input1(e){
-        pr
         this.path = e.target.value.split(',');
         this.$store.commit('changepath', this.path);
       },

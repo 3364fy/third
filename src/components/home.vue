@@ -4,7 +4,7 @@
   <!-- 上侧导航栏 -->
   <div class="mt-4 row" style=" justify-content: space-evenly;margin: 10px 0 10px 0;">
         <el-input
-        style="max-width: 600px;height: 5vh;"
+        style="max-width: 60vw;height: 5vh;"
         placeholder="Please input"
         class="input-with-select"
         input-style="text-align: center;"
@@ -57,20 +57,20 @@
               input-style="text-align: center;"
               v-show="true"
               v-model="scope.row.injecttime"
-             
+              @change.native="timeinput"
               :controls="false"
             />
           </template>
         </el-table-column>
     </el-table>
 
-  <!-- 下侧功能区 -->
-  <div class="scroll " style="height: calc(87% - 40px);">
-    <div class="inppath " v-for="(inppath, index) in inpPaths" :key="index">
-      <div class="border">{{ inppath }}</div>
-      <ProgressBar class="border"  style="margin: 10px 0 5px 0;border-radius: 5px;" :progress="progress[index][0]" :step="progress[index][1]" />
-    </div>
-  </div>
+
+  <el-scrollbar  style="padding: 10px;height: 10vh;flex-grow: 1;boxShadow:--el-box-shadow-dark;">
+      <el-card v-for="(inppath, index) in inpPaths" class="box-card" style="height:70px; margin: 2px 0 0 0;">
+          <div >{{ inppath }}</div> 
+          <ProgressBar :progress="progress[index][0]" :step="progress[index][1]" />
+      </el-card>
+    </el-scrollbar>
 
   <div class="center" style="height: 3%;" v-if="inpPaths.length > 0">{{ inpPaths.length }}</div>
 </template>
@@ -95,7 +95,7 @@ export default {
       tabledata1: [
         {
           version: '2022',
-          cpunumber: '1000',
+          cpunumber: '1',
           injecttime: [1,432000,3888000,5184000],
         },
       ],
@@ -111,8 +111,10 @@ export default {
   },
   methods: {
     timeinput(e){
-      this.injecttime = e.target.value.split(',');
-      console.log(this.injecttime);
+      // console.log(e)
+      this.tabledata1[0].injecttime = e.target.value.split(',');
+      // this.injecttime = e.target.value.split(',');
+      // console.log(this.injecttime);
     },
 
     input(e){
@@ -132,7 +134,7 @@ export default {
       } else if (selected === null) {
         // user cancelled the selection
       } else {
-        this.path = selected;
+        this.path = [selected];
         this.$store.commit('changepath', [selected]);
         // user selected a single directory
       }
@@ -225,7 +227,7 @@ export default {
       
       let interval=setInterval(() => {
         if(this.allowsuspend){
-          this.suspendimg = 开始图片;
+          // this.suspendimg = 开始图片;
           this.currentIcon="VideoPause";
           clearInterval(interval);
         }else{
@@ -272,9 +274,9 @@ export default {
                 var step=parseInt(parts[1],10)
                 if(totaltime){
                   console.log(`当前第${step}步已经模拟的时间为：${totaltime}秒`)
-                  console.log(totaltime / this.injecttime[step-1] * 100);
+                  console.log(totaltime / this.tabledata1[0].injecttime[step-1] * 100);
                   // this.$set(this.progress, index, [parseFloat((totaltime / this.injecttime[step-1] * 100).toFixed(1)), step]);
-                  this.progress[index][0]=parseFloat((totaltime / this.injecttime[step-1] * 100).toFixed(1));
+                  this.progress[index][0]=parseFloat((totaltime / this.tabledata1[0].injecttime[step-1] * 100).toFixed(1));
                   this.progress[index][1]=step;
                   console.log(`更改完后的进度为：${this.progress[index]}`);
                 }else{

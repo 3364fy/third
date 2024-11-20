@@ -31,7 +31,7 @@ export default {
         <el-aside style="height: 100vh;width: 15vw;">
           <Aside style="height: 100%" />
         </el-aside>
-        <el-main style="height: 100vh;">
+        <el-main style="height: 100vh;display: flex;flex-direction: column;">
           <router-view  v-slot="{ Component }" >
             <keep-alive>
               <component :is="Component" />

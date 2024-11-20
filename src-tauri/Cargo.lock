@@ -3369,6 +3369,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9e08d8363704e6c71fc928674353e6b7c23dcea9d82d7012c8faf2a3a025f8d0"
 
 [[package]]
+name = "stressdirect"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "string_cache"
 version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3803,6 +3811,7 @@ dependencies = [
  "post",
  "serde",
  "serde_json",
+ "stressdirect",
  "tauri",
  "tauri-build",
  "winapi",

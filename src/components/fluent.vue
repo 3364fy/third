@@ -2,26 +2,71 @@
 
 <template >
     <!-- 上侧导航栏 -->
-    <div class="row " style="justify-content:space-between ;box-sizing: border-box;height: 5%; margin: 10px 0 10px 0;">
-        <input type="text" placeholder='请选择目录' v-model="path" @change="input"  class=" border center" style="width: 70%;">
-        <button class="border center"  @click="selectDir">选择目录</button>
-        <button class=" center border" @click="confirm" :disabled="confirm_disabled">确定</button>
-    </div>
-  
-    <div class="row " style="justify-content:space-between ;box-sizing: border-box;height: 5%;margin: 10px 0 10px 0;">
-      <input style="width: 25%;" type="text" placeholder='版本' v-model="version"   class=" border center" >
-      <input style="width: 25%;" type="text" placeholder='维度' v-model="dimensions"   class=" border center" >      
-      <input style="width: 25%;" type="text" placeholder='线程数' v-model="cpunumber"   class=" border center" >
-      <button class=" center border" @click="start" :disabled='start_disabled'>全部开始</button>
-    </div>
+    <div class="mt-4 row" style=" justify-content: space-evenly;margin: 10px 0 10px 0;">
+        <el-input
+        style="max-width: 60vw;height: 5vh;"
+        placeholder="Please input"
+        class="input-with-select"
+        input-style="text-align: center;"
+        @change="input" 
+        v-model="path"
+        >
+            <template #append>
+                <!-- <el-button icon="Search" /> -->
+                <el-icon @click="selectDir" style="cursor: pointer;"><Folder  /></el-icon>
+            </template>
+        </el-input>
+
+        <el-button-group style="height: 5vh;" size="large">
+            <el-button  type="primary" icon="ArrowLeft" :disabled="confirm_disabled" @click="confirm">确定</el-button>
+            <el-button type="primary"  @click="start">
+            全部开始<el-icon class="el-icon--right" ><ArrowRight/></el-icon>
+            </el-button>
+        </el-button-group>   
+  </div>
+  <el-table :data="tabledata" >
+        <el-table-column label="Fluent版本"  header-align="center">
+        <template #default="scope">
+            <el-input
+              input-style="text-align: center;"
+              v-show="true"
+              v-model="scope.row.version"
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="SIGV" label="维度"   header-align="center">
+        <template #default="scope">
+            <el-input
+              input-style="text-align: center;"
+              v-show="true"
+              v-model="scope.row.dimensions"
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="SIGh" label="线程数"   header-align="center">
+        <template #default="scope">
+            <el-input
+              input-style="text-align: center;"
+              v-show="true"
+              v-model="scope.row.cpunumber"
+             
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+    </el-table>
   
     <!-- 下侧功能区 -->
-    <div class="scroll " style="height: calc(87% - 40px);">
-      <div class="inppath " v-for="(inppath, index) in inpPaths" :key="index">
-        <div class="border">{{ inppath }}</div>
-        <!-- <ProgressBar class="border" style="margin: 10px 0 5px 0;border-radius: 5px;" :progress="progress[index]" /> -->
-      </div>
-    </div>
+
+    <el-scrollbar  style="padding: 10px;height: 50vh;flex-grow: 1;boxShadow:--el-box-shadow-dark;">
+      <el-card v-for="inppath in inpPaths" class="box-card" style="height:30px; margin: 2px 0 0 0;display: flex; text-align: center;align-items: center;">
+          <div >{{ inppath }}</div> 
+      </el-card>
+    </el-scrollbar>
   
     <div class="center" style="height: 3%;" v-if="inpPaths.length > 0">{{ inpPaths.length }}</div>
   </template>
@@ -32,8 +77,8 @@
   import { appDir, dirname } from '@tauri-apps/api/path';
   import ProgressBar from './Progressbar.vue';
   import { fs } from '@tauri-apps/api';
-  import 开始图片 from '../assets/运行.png';
-  import 暂停图片 from '../assets/暂停.png';
+  // import 开始图片 from '../assets/运行.png';
+  // import 暂停图片 from '../assets/暂停.png';
   import { basename, extname } from '@tauri-apps/api/path';
   export default {
     components: {
@@ -49,7 +94,13 @@
         cpunumber: '3',
         dimensions:'2',
         progress: [],
-        
+        tabledata: [
+          {
+            version: '2022',
+            dimensions: '2',
+            cpunumber: '3',
+          },
+        ],
         index: 0,
         
       };
@@ -70,7 +121,7 @@
         } else if (selected === null) {
           // user cancelled the selection
         } else {
-          this.path = selected;
+          this.path = [selected];
           // user selected a single directory
         }
         
@@ -117,6 +168,20 @@
   
   
     },
+
+    beforeRouteEnter(to, from, next) {
+    console.log('home--beforeRouteEnter');
+    next(vm => {
+    // 访问组件实例 `vm`
+      console.log(vm.$store.state.path);
+      console.log('================');
+      if (vm.$store.state.path!='E:/Office'){
+        console.log(vm.$store.state.path);
+        vm.path = [vm.$store.state.path];
+      }
+      }
+    );
+  },
   };
   
   </script>

@@ -198,6 +198,40 @@ fn coal(path: String, parameter: Vec<Vec<f64>>,length:f64,gaplength:f64,sigv: f6
 }
 
 #[tauri::command]
+fn stressdirect(path: String,json_data:String) -> Result<String, String> {
+    use stressdirect::stressdirect;
+    use std::io::Write;
+    use std::process::{Command, Stdio};
+    use std::os::windows::process::CommandExt;
+    use winapi::um::winbase::CREATE_NO_WINDOW;
+    use std::env;
+    // 获取当前路径
+    let current_dir = env::current_dir().expect("Failed to get current directory");
+
+    // 打印当前路径
+    println!("Current directory: {:?}", current_dir);
+    // let path=format!("{}\\{}",current_dir.to_str().unwrap(),"mesh.py");
+    let targetpath=format!("{}\\{}",path,"stressdirect.py");
+    println!("{:?}",&targetpath);
+    let file=std::fs::File::create(targetpath.clone()).expect("create file failed");
+    println!("file is {:?}", file);
+    let mut file=std::fs::OpenOptions::new().append(true).open(targetpath).expect("open file failed");
+    file.write(stressdirect(&json_data).as_bytes()).expect("write file failed");
+    
+    // 执行命令
+    Command::new("cmd")
+        .current_dir(path)
+        .args(&["/C", "call", "abaqus", "cae", "noGUI=stressdirect.py"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .expect("Failed to execute command");
+    Ok("success".to_string())
+}
+
+
+#[tauri::command]
 fn suspendswitch(dirpath: String, command: String) -> Result<String, String> {
     use std::process::{Command, Stdio};
     use std::os::windows::process::CommandExt;
@@ -429,7 +463,7 @@ fn showimage(path:String){
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, confirm, start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent,coal,base,post,showimage]) // 注册 confirm 函数   
+        .invoke_handler(tauri::generate_handler![greet, confirm, start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent,coal,base,post,showimage,stressdirect]) // 注册 confirm 函数   
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     println!("hello world!")
