@@ -31,8 +31,8 @@
     <el-table :data="tabledata1" >
         <el-table-column label="长度(m)"   header-align="center">
         <template #default="scope">
-            <el-input
-              input-style="text-align: center;"
+            <el-input-number
+              style="width: 100%;"  
               v-show="true"
               v-model="scope.row.length"
               
@@ -43,11 +43,11 @@
 
         <el-table-column  label="宽度(m)"   header-align="center">
         <template #default="scope">
-            <el-input
+            <el-input-number
+              style="width: 100%;"
               input-style="text-align: center;"
               v-show="true"
               v-model="scope.row.width"
-              
               :controls="false"
             />
           </template>
@@ -55,8 +55,8 @@
 
         <el-table-column  label="高度(m)"  header-align="center">
         <template #default="scope">
-            <el-input
-              input-style="text-align: center;"
+            <el-input-number
+              style="width: 100%;"
               v-show="true"
               v-model="scope.row.height"
               
@@ -139,6 +139,7 @@ export default {
       createinp(){
         // this.convertedArray = this.tabledata2.map(item => Object.values(item));
         console.log(this.convertedArray);
+        // this.tabledata1=this.tabledata1.map(item=>Number(item));
         confirm('确定生成输入文件吗?', 
           { title: '警告', type: 'info',okLabel: '确定', cancelLabel: '取消' }
         ).then((e)=>{
@@ -146,7 +147,7 @@ export default {
           if(e){
             console.log(this.tabledata1[0].length)
             invoke('stressdirect',{
-              path:this.path,
+              path:this.path[0],
               jsonData:JSON.stringify(this.tabledata1[0]) ,
             });
           }
@@ -171,6 +172,19 @@ export default {
 
 
     },
+    beforeRouteEnter(to, from, next) {
+    console.log('home--beforeRouteEnter');
+    next(vm => {
+    // 访问组件实例 `vm`
+      console.log(vm.$store.state.path);
+      console.log('================');
+      if (vm.$store.state.path!='E:/Office'){
+        console.log(vm.$store.state.path);
+        vm.path = [vm.$store.state.path];
+      }
+      }
+    );
+  },
 
 }
 

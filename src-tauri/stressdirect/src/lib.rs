@@ -148,30 +148,78 @@ faces = f.findAt(((front_view_left, top_view_top/2, (height+front_view_top)/2), 
 p.Set(faces=faces, name='Set-1')
 # #: The set 'Set-1' has been created (2 faces).
 
+# (front_view_left+front_view_right)/2
+# top_view_top/2
+# (top_view_top+width)/2
+cells = c.findAt((((front_view_left+front_view_right)/2, top_view_top/2, 0.0), ), (((front_view_left+front_view_right)/2, top_view_top/2,height), ), ((
+    (front_view_left+front_view_right)/2, (top_view_top+width)/2, 0.0), ), (((front_view_left+front_view_right)/2, (top_view_top+width)/2, height), ))
+leaf = dgm.LeafFromGeometry(cellSeq=cells)
+session.viewports['Viewport: 1'].partDisplay.displayGroup.replace(leaf=leaf)
+
 p = mdb.models['Model-1'].parts['Part-1']
 s = p.faces
-side1Faces = f.findAt(((front_view_left, top_view_top/2, (height+front_view_top)/2), ), ((front_view_right, top_view_top/2, (height+front_view_top)/2), ))
-p.Surface(side1Faces=side1Faces, name='Surf-1')
-# #: The surface 'Surf-1' has been created (2 faces).
+side1Faces = s.findAt(((front_view_left, top_view_top/2, (front_view_top+height)/2), ))
+side2Faces = s.findAt(((front_view_right, top_view_top/2, (front_view_top+height)/2), ))
+p.Surface(side1Faces=side1Faces, side2Faces=side2Faces, name='Surf-2')
+#: The surface 'Surf-2' has been created (2 faces).
 
-a = mdb.models['Model-1'].rootAssembly
-session.viewports['Viewport: 1'].setValues(displayedObject=a)
-session.viewports['Viewport: 1'].assemblyDisplay.setValues(
-    optimizationTasks=OFF, geometricRestrictions=OFF, stopConditions=OFF)
+leaf = dgm.Leaf(leafType=DEFAULT_MODEL)
+session.viewports['Viewport: 1'].partDisplay.displayGroup.replace(leaf=leaf)
+
+
+p = mdb.models['Model-1'].parts['Part-1']
+c = p.cells
+cells = c.findAt((((front_view_left+front_view_right)/2, top_view_top/2, 0.0), ), (((front_view_left+front_view_right)/2, top_view_top/2,height), ), ((
+    (front_view_left+front_view_right)/2, (top_view_top+width)/2, 0.0), ), (((front_view_left+front_view_right)/2, (top_view_top+width)/2, height), ))
+leaf = dgm.LeafFromGeometry(cellSeq=cells)
+session.viewports['Viewport: 1'].partDisplay.displayGroup.remove(leaf=leaf)
+
+p = mdb.models['Model-1'].parts['Part-1']
+s = p.faces
+side1Faces = s.findAt(((front_view_right, top_view_top/2, (front_view_top+height)/2), ))
+side2Faces = s.findAt(((front_view_left, top_view_top/2, (front_view_top+height)/2), ))
+p.Surface(side1Faces=side1Faces, side2Faces=side2Faces, name='Surf-3')
+
+leaf = dgm.Leaf(leafType=DEFAULT_MODEL)
+session.viewports['Viewport: 1'].partDisplay.displayGroup.replace(leaf=leaf)
+
+a=mdb.models['Model-1'].parts['Part-1']
+a.SurfaceByBoolean(name='Surf-1', surfaces=(a.surfaces['Surf-2'], 
+    a.surfaces['Surf-3'], ))
+
+p = mdb.models['Model-1'].parts['Part-1']
+f = p.faces
+set1=()
+for i in f:
+    if i.pointOn[0][0]==0 or i.pointOn[0][0]==length:
+        set1=set1+(i.pointOn[0],)
+# print(set1)
+pickedRegions = f.findAt(*[(coord,) for coord in set1])
+p.Set(faces=pickedRegions, name='Set-x')
+
+set2=()
+for i in f:
+    if i.pointOn[0][1]==0 or i.pointOn[0][1]==width:
+        set2=set2+(i.pointOn[0],)
+pickedRegions = f.findAt(*[(coord,) for coord in set2])
+p.Set(faces=pickedRegions, name='Set-y')
+
+set3=()
+for i in f:
+    if i.pointOn[0][2]==0 or i.pointOn[0][2]==height:
+        set3=set3+(i.pointOn[0],)
+pickedRegions = f.findAt(*[(coord,) for coord in set3])
+p.Set(faces=pickedRegions, name='Set-z')
+
+c=p.cells
+p.Set(cells=c, name='Set-ALL')
+
 a = mdb.models['Model-1'].rootAssembly
 a.DatumCsysByDefault(CARTESIAN)
-
 p = mdb.models['Model-1'].parts['Part-1']
 a.Instance(name='Part-1-1', part=p, dependent=OFF)
-p = mdb.models['Model-1'].parts['Part-1']
-session.viewports['Viewport: 1'].setValues(displayedObject=p)
-a = mdb.models['Model-1'].rootAssembly
-session.viewports['Viewport: 1'].setValues(displayedObject=a)
 session.viewports['Viewport: 1'].assemblyDisplay.setValues(interactions=ON, 
     constraints=ON, connectors=ON, engineeringFeatures=ON)
-session.viewports['Viewport: 1'].assemblyDisplay.setValues(
-    renderStyle=WIREFRAME)
-session.viewports['Viewport: 1'].assemblyDisplay.setValues(renderStyle=SHADED)
 a = mdb.models['Model-1'].rootAssembly
 pickedRegions = a.instances['Part-1-1'].sets['Set-1']
 mdb.models['Model-1'].rootAssembly.engineeringFeatures.assignSeam(
@@ -242,6 +290,32 @@ session.pngOptions.setValues(imageSize=(4096, 1931))
 session.printOptions.setValues(vpDecorations=OFF)
 session.printToFile(fileName='1', format=PNG, canvasObjects=(
     session.viewports['Viewport: 1'], ))
+
+with open('stressdirect.inp', 'w') as f:
+    str1="""*INCLUDE,INPUT=GEOMODEL.INP
+
+*SOLID SECTION, ELSET=Set-ALL,Material=Material1
+
+*Material, name=Material1
+*Elastic
+1e11,0.3
+
+*Boundary
+XFIXED,1,1
+YFIXED,1,1
+ZFIXED,1,1
+
+
+
+*STEP name=Step1,NLGEOM=NO,UNSYMM=YES
+*STATIC
+1.,1.,1e-5,1.
+
+*DsLoad
+Surf-1,P,-1e7
+*End Step
+"""
+    f.write(str1)
 "#,v["length"],v["width"],v["height"]); 
     str.to_string()
 
