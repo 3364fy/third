@@ -32,9 +32,13 @@ executeOnCaeStartup()
 length={}
 width={}
 height={}
+distance={}
 
-front_view_left=length/4
-front_view_right=length/4*3
+#front_view_left=length/4
+#front_view_right=length/4*3
+
+front_view_left=length/2-distance/2
+front_view_right=length/2+distance/2
 front_view_top=height/4*3
 
 top_view_top=width/4*3
@@ -204,6 +208,7 @@ for i in f:
 pickedRegions = f.findAt(*[(coord,) for coord in set2])
 p.Set(faces=pickedRegions, name='Set-y')
 
+
 set3=()
 for i in f:
     if i.pointOn[0][2]==0 or i.pointOn[0][2]==height:
@@ -211,8 +216,37 @@ for i in f:
 pickedRegions = f.findAt(*[(coord,) for coord in set3])
 p.Set(faces=pickedRegions, name='Set-z')
 
+
 c=p.cells
 p.Set(cells=c, name='Set-ALL')
+
+set4=()
+for i in c:
+    if i.pointOn[0][2]>front_view_top:
+        set4=set4+(i.pointOn[0],)
+pickedRegions = c.findAt(*[(coord,) for coord in set4])
+p.Set(cells=pickedRegions, name='R')
+
+set5=()
+for i in c:
+    if i.pointOn[0][2]<front_view_top:
+        set5=set5+(i.pointOn[0],)
+pickedRegions = c.findAt(*[(coord,) for coord in set5])
+p.Set(cells=pickedRegions, name='C')
+
+#设置材料属性
+mdb.models['Model-1'].Material(name='Material-1')
+mdb.models['Model-1'].materials['Material-1'].Elastic(table=((30000000000.0, 
+    0.3), ))
+#mdb.models['Model-1'].materials['Material-1'].Density(table=((1000.0, ), ))
+mdb.models['Model-1'].HomogeneousSolidSection(name='Section-1', 
+    material='Material-1', thickness=None)
+p = mdb.models['Model-1'].parts['Part-1']
+region = p.sets['Set-ALL']
+p = mdb.models['Model-1'].parts['Part-1']
+p.SectionAssignment(region=region, sectionName='Section-1', offset=0.0, 
+    offsetType=MIDDLE_SURFACE, offsetField='', 
+    thicknessAssignment=FROM_SECTION)
 
 a = mdb.models['Model-1'].rootAssembly
 a.DatumCsysByDefault(CARTESIAN)
@@ -231,7 +265,7 @@ session.viewports['Viewport: 1'].assemblyDisplay.meshOptions.setValues(
     meshTechnique=ON)
 a = mdb.models['Model-1'].rootAssembly
 partInstances =(a.instances['Part-1-1'], )
-a.seedPartInstance(regions=partInstances, size=1.0, deviationFactor=0.1, 
+a.seedPartInstance(regions=partInstances, size=10.0, deviationFactor=0.1, 
     minSizeFactor=0.1)
 a = mdb.models['Model-1'].rootAssembly
 partInstances =(a.instances['Part-1-1'], )
@@ -240,83 +274,74 @@ a.generateMesh(regions=partInstances)
 session.viewports['Viewport: 1'].assemblyDisplay.setValues(mesh=OFF)
 session.viewports['Viewport: 1'].assemblyDisplay.meshOptions.setValues(
     meshTechnique=OFF)
-mdb.Job(name='GEOMODEL', model='Model-1', description='', type=ANALYSIS, 
+
+
+
+#设置时间步
+a = mdb.models['Model-1'].rootAssembly
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(
+    adaptiveMeshConstraints=ON)
+mdb.models['Model-1'].GeostaticStep(name='Step-1', previous='Initial')
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(step='Step-1')
+mdb.models['Model-1'].StaticStep(name='Step-2', previous='Step-1')
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(step='Step-2')
+a = mdb.models['Model-1'].rootAssembly
+session.viewports['Viewport: 1'].setValues(displayedObject=a)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(
+    adaptiveMeshConstraints=ON)
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(step='Step-1')
+mdb.models['Model-1'].FieldOutputRequest(name='F-Output-1', 
+    createStepName='Step-1', variables=('S', 'MISES',   
+     'U', 'UT', 'UR', 'V', 'VT', 'VR', 'RBANG', 
+   ))
+
+
+#设置边界条件
+a1 = mdb.models['Model-1'].rootAssembly
+region = a1.instances['Part-1-1'].surfaces['Surf-3']
+mdb.models['Model-1'].Pressure(name='Load-1', createStepName='Step-2', 
+    region=region, distributionType=UNIFORM, field='', magnitude=75000000.0, 
+    amplitude=UNSET)
+
+session.viewports['Viewport: 1'].assemblyDisplay.setValues(step='Initial')
+a1 = mdb.models['Model-1'].rootAssembly
+region = a1.instances['Part-1-1'].sets['Set-x']
+mdb.models['Model-1'].DisplacementBC(name='BC-1', createStepName='Initial', 
+    region=region, u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, 
+    amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+a1 = mdb.models['Model-1'].rootAssembly
+region = a1.instances['Part-1-1'].sets['Set-y']
+mdb.models['Model-1'].DisplacementBC(name='BC-2', createStepName='Initial', 
+    region=region, u1=UNSET, u2=SET, u3=UNSET, ur1=UNSET, ur2=UNSET, ur3=UNSET, 
+    amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+a1 = mdb.models['Model-1'].rootAssembly
+region = a1.instances['Part-1-1'].sets['Set-z']
+mdb.models['Model-1'].DisplacementBC(name='BC-3', createStepName='Initial', 
+    region=region, u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET, 
+    amplitude=UNSET, distributionType=UNIFORM, fieldName='', localCsys=None)
+
+a1 = mdb.models['Model-1'].rootAssembly
+region = a1.instances['Part-1-1'].sets['R']
+mdb.models['Model-1'].Stress(name='Predefined Field-1', region=region, 
+    distributionType=UNIFORM, sigma11=72000000.0, sigma22=87000000.0, 
+    sigma33=97000000.0, sigma12=0.0, sigma13=0.0, sigma23=0.0)
+
+a1 = mdb.models['Model-1'].rootAssembly
+region = a1.instances['Part-1-1'].sets['C']
+mdb.models['Model-1'].Stress(name='Predefined Field-2', region=region, 
+    distributionType=UNIFORM, sigma11=80000000.0, sigma22=87000000.0, 
+    sigma33=97000000.0, sigma12=0.0, sigma13=0.0, sigma23=0.0)
+
+mdb.Job(name='JOB', model='Model-1', description='', type=ANALYSIS, 
     atTime=None, waitMinutes=0, waitHours=0, queue=None, memory=90, 
     memoryUnits=PERCENTAGE, getMemoryFromAnalysis=True, 
     explicitPrecision=SINGLE, nodalOutputPrecision=SINGLE, echoPrint=OFF, 
     modelPrint=OFF, contactPrint=OFF, historyPrint=OFF, userSubroutine='', 
-    scratch='', resultsFormat=ODB, parallelizationMethodExplicit=DOMAIN, 
-    numDomains=1, activateLoadBalancing=False, numThreadsPerMpiProcess=1, 
-    multiprocessingMode=DEFAULT, numCpus=1, numGPUs=0)
-mdb.jobs['GEOMODEL'].writeInput(consistencyChecking=OFF)
-
-session.viewports['Viewport: 1'].viewportAnnotationOptions.setValues(triad=OFF, 
-    legend=OFF, title=OFF, state=OFF, annotations=OFF, compass=OFF)
-session.viewports['Viewport: 1'].view.setValues(nearPlane=390.106, 
-    farPlane=580.446, width=305.577, height=144.396, cameraPosition=(4.93089, 
-    -279.876, 353.12), cameraUpVector=(0.160838, 0.893677, 0.418895), 
-    cameraTarget=(108.021, 45.6847, 6.29384))
-session.viewports['Viewport: 1'].view.setValues(nearPlane=382.567, 
-    farPlane=587.682, width=299.672, height=141.606, cameraPosition=(-23.7718, 
-    -295.065, 327.885), cameraUpVector=(0.0900128, 0.88044, 0.465536), 
-    cameraTarget=(108.107, 45.7302, 6.36941))
-session.viewports['Viewport: 1'].view.setValues(nearPlane=389.735, 
-    farPlane=583.73, width=305.288, height=144.259, cameraPosition=(22.64, 
-    -349.529, 277.194), cameraUpVector=(-0.0773949, 0.817551, 0.570631), 
-    cameraTarget=(107.953, 45.9104, 6.53714))
-session.viewports['Viewport: 1'].view.setValues(nearPlane=361.298, 
-    farPlane=608.382, width=283.012, height=133.733, cameraPosition=(-117.638, 
-    -336.594, 205.798), cameraUpVector=(0.0606263, 0.738327, 0.671713), 
-    cameraTarget=(107.952, 45.9105, 6.5367))
-session.viewports['Viewport: 1'].view.setValues(nearPlane=363.508, 
-    farPlane=606.172, width=284.743, height=134.551, cameraUpVector=(0.149361, 
-    0.699914, 0.698435), cameraTarget=(107.952, 45.9105, 6.5367))
-session.viewports['Viewport: 1'].view.setValues(nearPlane=363.525, 
-    farPlane=606.155, width=284.756, height=134.557, cameraPosition=(-117.638, 
-    -336.594, 205.798), cameraUpVector=(0.145112, 0.701866, 0.697371), 
-    cameraTarget=(107.952, 45.9105, 6.5367))
-session.viewports['Viewport: 1'].view.setValues(cameraPosition=(-117.638, 
-    -336.594, 205.798), cameraUpVector=(0.128046, 0.709592, 0.692881), 
-    cameraTarget=(107.952, 45.9105, 6.5367))
-session.viewports['Viewport: 1'].view.setValues(nearPlane=405.571, 
-    farPlane=572.607, width=317.691, height=150.12, cameraPosition=(116.509, 
-    -403.081, 193.64), cameraUpVector=(-0.0534894, 0.668773, 0.74154), 
-    cameraTarget=(107.039, 46.1696, 6.58408))
-session.viewports['Viewport: 1'].view.setValues(nearPlane=360.51, 
-    farPlane=610.343, width=282.394, height=133.441, cameraPosition=(-120.298, 
-    -338.525, 200.296), cameraUpVector=(0.163895, 0.683127, 0.711671), 
-    cameraTarget=(105.897, 46.4811, 6.61619))
-session.pngOptions.setValues(imageSize=(4096, 1931))
-session.printOptions.setValues(vpDecorations=OFF)
-session.printToFile(fileName='1', format=PNG, canvasObjects=(
-    session.viewports['Viewport: 1'], ))
-
-with open('stressdirect.inp', 'w') as f:
-    str1="""*INCLUDE,INPUT=GEOMODEL.INP
-
-*SOLID SECTION, ELSET=Set-ALL,Material=Material1
-
-*Material, name=Material1
-*Elastic
-1e11,0.3
-
-*Boundary
-XFIXED,1,1
-YFIXED,1,1
-ZFIXED,1,1
-
-
-
-*STEP name=Step1,NLGEOM=NO,UNSYMM=YES
-*STATIC
-1.,1.,1e-5,1.
-
-*DsLoad
-Surf-1,P,-1e7
-*End Step
-"""
-    f.write(str1)
-"#,v["length"],v["width"],v["height"]); 
+    scratch='', resultsFormat=ODB, numThreadsPerMpiProcess=1, 
+    multiprocessingMode=DEFAULT, numCpus=4, numDomains=4, numGPUs=0)
+mdb.jobs['JOB'].submit(consistencyChecking=OFF)
+"#,v["length"],v["width"],v["height"],v["distance"]); 
     str.to_string()
 
 }

@@ -16,7 +16,7 @@
 
         <el-button-group style="height: 5vh;" size="large">
             <el-button  type="primary" icon="ArrowLeft"  @click="showimage">效果图</el-button>
-            <el-button  type="primary" @click="createinp">生成inp</el-button>
+            <el-button  type="primary" @click="createinp">运行计算</el-button>
             <!-- <el-button type="primary" @click="createinp">
             生成inp<el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button> -->
@@ -65,6 +65,18 @@
           </template>
         </el-table-column>
 
+        <el-table-column  label="簇间距(m)"  header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              v-show="true"
+              v-model="scope.row.distance"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
     </el-table>
 
 </template>
@@ -80,9 +92,10 @@ export default {
             length:120,
             tabledata1: [
                 {
-                    length:120,
-                    width:30,
+                    length:200,
+                    width:100,
                     height:30,
+                    distance:10,
                 },
             ],
         }
@@ -107,7 +120,7 @@ export default {
           } else if (selected === null) {
               // user cancelled the selection
           } else {
-              this.path = selected;
+              this.path = [selected];
               this.$store.commit('changepath', selected);
               this.base64code = 0;  
               console.log('88888888888888888888');
@@ -140,7 +153,7 @@ export default {
         // this.convertedArray = this.tabledata2.map(item => Object.values(item));
         console.log(this.convertedArray);
         // this.tabledata1=this.tabledata1.map(item=>Number(item));
-        confirm('确定生成输入文件吗?', 
+        confirm('确定开始计算吗?', 
           { title: '警告', type: 'info',okLabel: '确定', cancelLabel: '取消' }
         ).then((e)=>{
           console.log(e);
