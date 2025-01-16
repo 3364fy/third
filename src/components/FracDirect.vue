@@ -20,7 +20,7 @@
             <!-- <el-button type="primary" @click="createinp">
             生成inp<el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button> -->
-            <el-button type="primary" >
+            <el-button type="primary" @click="post">
             后处理<el-icon class="el-icon--right"><ArrowRight /></el-icon>
             </el-button>
         </el-button-group>
@@ -77,6 +77,42 @@
           </template>
         </el-table-column>
 
+        <el-table-column  label="裂缝高度(m)"  header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              v-show="true"
+              v-model="scope.row.fracheight"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column  label="网格大小(m)"  header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              v-show="true"
+              v-model="scope.row.meshsize"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column  label="CPU核数(个)"  header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              v-show="true"
+              v-model="scope.row.cpu"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
     </el-table>
 
 </template>
@@ -92,10 +128,13 @@ export default {
             length:120,
             tabledata1: [
                 {
-                    length:200,
-                    width:100,
-                    height:30,
+                    length:120,
+                    width:50,
+                    height:20,
                     distance:10,
+                    fracheight:10,
+                    meshsize:1,
+                    cpu:12,
                 },
             ],
         }
@@ -170,12 +209,12 @@ export default {
       },
       showimage(){
         invoke('showimage', {
-          path: this.path
+          path: this.path[0]
         })
       },
       post(){
-        invoke('post', {
-          path: this.path,
+        invoke('stressdirectpost', {
+          path: this.path[0],
         }).then((res)=>{
           console.log(res);
         }).catch((err)=>{

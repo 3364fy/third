@@ -11,15 +11,14 @@
         @open="handleOpen"
         @close="handleClose"
       >
-        <el-sub-menu index="1">
+        <el-sub-menu  index="1">
           <template #title>
             <el-icon><location /></el-icon>
             <span>算例</span>
           </template>
-          <!-- <el-menu-item-group title="算例"> -->
-              <router-link to="/table">
+              <!-- <router-link to="/table">
                 <el-menu-item index="1-1">煤层燃烧</el-menu-item>
-              </router-link>
+              </router-link> -->
 
               <router-link to="/fracDirect">
                 <el-menu-item index="1-2">应力方向</el-menu-item>
@@ -44,7 +43,7 @@
         </el-sub-menu>
 
         
-        <el-sub-menu index="2">
+        <!-- <el-sub-menu index="2">
           <template #title>
             <el-icon><icon-menu /></el-icon>
             <span>Abaqus</span>
@@ -73,7 +72,7 @@
 
           
   
-        </el-sub-menu>
+        </el-sub-menu> -->
 
       </el-menu>
     <!-- </el-col> -->
@@ -82,9 +81,9 @@
 
 <script lang="ts" setup>
 import {
-  Menu as IconMenu,
+  // Menu as IconMenu,
   Location,
-  Setting,
+  // Setting,
 } from '@element-plus/icons-vue'
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)

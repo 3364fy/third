@@ -452,6 +452,33 @@ fn post(path:String){
 }
 
 #[tauri::command]
+fn stressdirectpost(path:String){
+    // use std::fs;
+    use std::io::Write;
+    use std::process::{Command, Stdio};
+    use std::os::windows::process::CommandExt;
+    use winapi::um::winbase::CREATE_NO_WINDOW;
+    // use std::env;
+    use stressdirect::post;
+
+    let targetpath=format!("{}\\{}",path,"LLstressdirect.py");
+    println!("{:?}",&targetpath);
+    let file=std::fs::File::create(targetpath.clone()).expect("create file failed");
+    println!("file is {:?}", file);
+    let mut file=std::fs::OpenOptions::new().append(true).open(targetpath).expect("open file failed");
+    file.write((post(&path)).as_bytes()).expect("write file failed");
+    
+    Command::new("cmd")
+        .current_dir(path)
+        .args(&["/C", "call", "abaqus", "cae", "noGUI=LLstressdirect.py"])
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+        .expect("Failed to execute command");
+}
+
+#[tauri::command]
 fn showimage(path:String){
     use std::process::Command;
     Command::new("cmd")
@@ -463,7 +490,7 @@ fn showimage(path:String){
 
 fn main() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![greet, confirm, start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent,coal,base,post,showimage,stressdirect]) // 注册 confirm 函数   
+        .invoke_handler(tauri::generate_handler![greet, confirm, start_simulate,start1,aftertreat,read_file,suspendswitch,startfluent,coal,base,post,showimage,stressdirect,stressdirectpost]) // 注册 confirm 函数   
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
     println!("hello world!")

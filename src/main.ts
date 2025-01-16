@@ -18,7 +18,7 @@ app.component('Progressbar', Progressbar);
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-      {path: '/',redirect: '/table'},
+      {path: '/',redirect: '/FracDirect'},
       { path: '/home/', name:'Home',component: ()=>import("./components/home.vue"),meta:{keepAlive:true} },
       { path: '/index/', name:'Index',component: Index,meta:{keepAlive:true} },
       { path: '/fluent/', name:'Fluent',component: Fluent,meta:{keepAlive:true} },
