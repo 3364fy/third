@@ -18,7 +18,7 @@
           </template>
               <router-link to="/table">
                 <el-menu-item index="1-1">煤层燃烧</el-menu-item>
-              </router-link> -->
+              </router-link>
 
               <router-link to="/fracDirect">
                 <el-menu-item index="1-2">应力转向</el-menu-item>
@@ -43,7 +43,7 @@
         </el-sub-menu>
 
         
-        <!-- <el-sub-menu index="2">
+        <el-sub-menu index="2">
           <template #title>
             <el-icon><icon-menu /></el-icon>
             <span>Abaqus</span>
@@ -72,7 +72,7 @@
 
           
   
-        </el-sub-menu> -->
+        </el-sub-menu>
 
       </el-menu>
     <!-- </el-col> -->
@@ -81,7 +81,7 @@
 
 <script lang="ts" setup>
 import {
-  // Menu as IconMenu,
+  Menu as IconMenu,
   Location,
   // Setting,
 } from '@element-plus/icons-vue'
