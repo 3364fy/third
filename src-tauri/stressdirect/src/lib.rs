@@ -236,8 +236,8 @@ p.Set(cells=pickedRegions, name='C')
 
 #设置材料属性
 mdb.models['Model-1'].Material(name='Material-1')
-mdb.models['Model-1'].materials['Material-1'].Elastic(table=((30000000000.0, 
-    0.3), ))
+mdb.models['Model-1'].materials['Material-1'].Elastic(table=(({}, 
+    {}), ))
 #mdb.models['Model-1'].materials['Material-1'].Density(table=((1000.0, ), ))
 mdb.models['Model-1'].HomogeneousSolidSection(name='Section-1', 
     material='Material-1', thickness=None)
@@ -302,12 +302,12 @@ mdb.models['Model-1'].FieldOutputRequest(name='F-Output-1',
 a1 = mdb.models['Model-1'].rootAssembly
 region = a1.instances['Part-1-1'].surfaces['Surf-1']
 mdb.models['Model-1'].Pressure(name='Load-1', createStepName='Step-2', 
-    region=region, distributionType=UNIFORM, field='', magnitude=78000000.0, 
+    region=region, distributionType=UNIFORM, field='', magnitude={}, 
     amplitude=UNSET)
 a = mdb.models['Model-1'].rootAssembly
 region = a.instances['Part-1-1'].surfaces['Surf-1']
 mdb.models['Model-1'].Pressure(name='Load-2', createStepName='Step-1', 
-    region=region, distributionType=UNIFORM, field='', magnitude=58000000.0, 
+    region=region, distributionType=UNIFORM, field='', magnitude={}, 
     amplitude=UNSET)
 mdb.models['Model-1'].loads['Load-2'].deactivate('Step-2')
 
@@ -331,8 +331,8 @@ mdb.models['Model-1'].DisplacementBC(name='BC-3', createStepName='Initial',
 a1 = mdb.models['Model-1'].rootAssembly
 region = a1.instances['Part-1-1'].sets['Set-ALL']
 mdb.models['Model-1'].Stress(name='Predefined Field-1', region=region, 
-    distributionType=UNIFORM, sigma11=-58000000.0, sigma22=-65000000.0, 
-    sigma33=-78000000.0, sigma12=0.0, sigma13=0.0, sigma23=0.0)
+    distributionType=UNIFORM, sigma11={}, sigma22={}, 
+    sigma33={}, sigma12=0.0, sigma13=0.0, sigma23=0.0)
 
 #a1 = mdb.models['Model-1'].rootAssembly
 #region = a1.instances['Part-1-1'].sets['C']
@@ -348,7 +348,7 @@ mdb.Job(name='JOB', model='Model-1', description='', type=ANALYSIS,
     scratch='', resultsFormat=ODB,  
     multiprocessingMode=DEFAULT, numCpus={}, numDomains={}, numGPUs=0)
 mdb.jobs['JOB'].submit(consistencyChecking=OFF)
-"#,v["length"],v["width"],v["height"],v["distance"],v["fracheight"],v["meshsize"],v["cpu"],v["cpu"]); 
+"#,v["length"],v["width"],v["height"],v["distance"],v["fracheight"],v["E"],v["u"],v["meshsize"],v["F"],-v["sigma11"].as_f64().unwrap(),v["sigma11"],v["sigma22"],v["sigma33"],v["cpu"],v["cpu"]); 
     str.to_string()
 
 }

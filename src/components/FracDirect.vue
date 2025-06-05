@@ -115,6 +115,82 @@
 
     </el-table>
 
+    <el-table :data="tabledata2" >
+        <el-table-column label="&sigma;11(Pa)"   header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"  
+              v-show="true"
+              v-model="scope.row.sigma11"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column  label="&sigma;22(Pa)"   header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              input-style="text-align: center;"
+              v-show="true"
+              v-model="scope.row.sigma22"
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column  label="&sigma;33(Pa)"  header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              v-show="true"
+              v-model="scope.row.sigma33"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column  label="弹性模量(Pa)"  header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              v-show="true"
+              v-model="scope.row.E"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column  label="泊松比"  header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              v-show="true"
+              v-model="scope.row.u"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column  label="裂缝面压力(Pa)"  header-align="center">
+        <template #default="scope">
+            <el-input-number
+              style="width: 100%;"
+              v-show="true"
+              v-model="scope.row.F"
+              
+              :controls="false"
+            />
+          </template>
+        </el-table-column>
+
+
+    </el-table>
+
 </template>
 
 <script >
@@ -135,6 +211,16 @@ export default {
                     fracheight:10,
                     meshsize:1,
                     cpu:12,
+                },
+            ],
+            tabledata2: [
+                {
+                    sigma11:-58000000.0,
+                    sigma22:-65000000.0,
+                    sigma33:-78000000.0,
+                    E:15E9,
+                    u:0.2,
+                    F:70000000,
                 },
             ],
         }
@@ -169,38 +255,24 @@ export default {
           
           // console.log(selected);
       },
-      onAddItem() {
-        console.log(this.tabledata2);
-          this.tabledata2.push({
-              rock:0,
-              thick:0,
-              E:0,
-              u:0,
-              angle:0,
-              C:0,
-              thermal:0,
-              density:0,
-              Q:0,
-              heat:0,
-          });
-      },
-      deleteRow(index) {
-          this.tabledata2.splice(index, 1);
-      },
 
       createinp(){
         // this.convertedArray = this.tabledata2.map(item => Object.values(item));
-        console.log(this.convertedArray);
+        // console.log(this.convertedArray);
         // this.tabledata1=this.tabledata1.map(item=>Number(item));
+        // this.tabledata2=this.tabledata2.map(item=>Number(item));
+        const mergedData = { ...this.tabledata1[0], ...this.tabledata2[0] };
+        // const mergedData=Object.values(merged).map(item => Number(item));
+        console.log(mergedData);
         confirm('确定开始计算吗?', 
           { title: '警告', type: 'info',okLabel: '确定', cancelLabel: '取消' }
         ).then((e)=>{
           console.log(e);
           if(e){
-            console.log(this.tabledata1[0].length)
+            console.log(mergedData.length)
             invoke('stressdirect',{
               path:this.path[0],
-              jsonData:JSON.stringify(this.tabledata1[0]) ,
+              jsonData:JSON.stringify(mergedData) ,
             });
           }
         }).catch((err)=>{
