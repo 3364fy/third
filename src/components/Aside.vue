@@ -21,7 +21,7 @@
               </router-link>
 
               <router-link to="/fracDirect">
-                <el-menu-item index="1-2">应力方向</el-menu-item>
+                <el-menu-item index="1-2">应力转向</el-menu-item>
               </router-link>
 
               <!-- <router-link to="/coal">
